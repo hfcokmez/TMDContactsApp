@@ -21,13 +21,13 @@ namespace Business.Concrete
         public AuthManager(IUserService userService, ITokenHelper tokenHelper)
         {
             _userService = userService;
-            _tokenHelper = tokenHelper;
+            _tokenHelper = tokenHelper; 
         }
 
         public IDataResult<AccessToken> CreateAccessToken(User user)
         {
-            var userClaims = _userService.GetUserOperationClaims(user);
-            var accessToken = _tokenHelper.CreateToken(user, userClaims);
+            //var userClaims = _userService.GetUserOperationClaims(user);
+            var accessToken = _tokenHelper.CreateToken(user);
             return new SuccessDataResult<AccessToken>(accessToken, Messages.AccessTokenCreated);
         }
 
@@ -68,7 +68,7 @@ namespace Business.Concrete
                 Note = userRegisterDto.Note,
             };
             _userService.Add(user);
-            return new SuccessDataResult<User>(Messages.UserRegistered);
+            return new SuccessDataResult<User>(user, Messages.UserRegistered);
         }
 
         public IResult userExists(string email)

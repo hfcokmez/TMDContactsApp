@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Core.Utilities.Security.JsonWebToken;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Core.Utilities.Security.JsonWebToken
+namespace Core.Utilities.Security.Jwt
 {
     public class TokenOptions
     {

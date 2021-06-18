@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Autofac;
-using Autofac.Extensions.DependencyInjection;
-using Business.DependencyResolver;
+using Business.Abstract;
+using Business.Concrete;
 using Core.Utilities.Security.Encryption;
 using Core.Utilities.Security.JsonWebToken;
+using Core.Utilities.Security.Jwt;
+using DataAccess.Abstract;
+using DataAccess.Concrete;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -18,34 +20,41 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace WebAPI
+namespace WebApplication1
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IConfiguration configuration)
         {
-            // In ASP.NET Core 3.0 env will be an IWebHostEnvironment , not IHostingEnvironment.
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-            this.Configuration = builder.Build();
+            Configuration = configuration;
         }
-        public IConfigurationRoot Configuration { get; private set; }
-        public ILifetimeScope AutofacContainer { get; private set; }
 
+        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddOptions();
             services.AddCors(c =>
             {
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
             });
+            //Dependency Injection:                
+            services.AddScoped<IContactService, ContactManager>();
+            services.AddScoped<IContactDal, EfContactDal>();
+            
+            services.AddScoped<IUserService, UserManager>();
+            services.AddScoped<IUserDal, EfUserDal>();
+
+            services.AddScoped<IGroupService, GroupManager>();
+            services.AddScoped<IGroupDal, EfGroupDal>();
+
+            services.AddScoped<IGroupContactService, GroupContactManager>();
+            services.AddScoped<IGroupContactDal, EfGroupContactDal>();
+            
+            services.AddScoped<IAuthService, AuthManager>();
+            services.AddScoped<ITokenHelper, JwtHelper>();
+
             var tokenOptions = Configuration.GetSection(key: "TokenOptions").Get<TokenOptions>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
@@ -60,31 +69,29 @@ namespace WebAPI
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey)
                 };
-
             });
-            var builder = new ContainerBuilder();
-            builder.Populate(services);
-            builder.RegisterModule(new AutofacBusinessModule());
-
-            AutofacContainer = builder.Build();
-            return new AutofacServiceProvider(AutofacContainer);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            loggerFactory.AddConsole(this.Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseHsts();
+            }   
             app.UseCors(x => x
-                            .AllowAnyOrigin()
-                            .AllowAnyHeader()
-                            .AllowAnyMethod()); // allow credetials
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod()); // allow credetials
 
             app.UseCors(options => options.AllowAnyOrigin());
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseMvc();
-
         }
     }
 }

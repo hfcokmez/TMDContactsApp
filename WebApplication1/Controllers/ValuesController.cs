@@ -2,28 +2,41 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Business.Abstract;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebAPI.Controllers
+namespace WebApplication1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class ValuesController : ControllerBase
     {
+        private IContactService _contactService;
+
+        public ValuesController(IContactService contactService)
+        {
+            _contactService = contactService;
+        }
+
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
-            return new string[] { "deneme", "deneme2" };
+            var falan = _contactService.GetList();
+            return new string[] { "value1", "value2" };
         }
 
-
+        // GET api/values/5
+        [HttpGet("{id}")]
+        public ActionResult<string> Get(int id)
+        {
+            return "value";
+        }
 
         // POST api/values
-        [HttpPost(template:"add")]
-        public string Post(string value, int id)
+        [HttpPost]
+        public void Post([FromBody] string value)
         {
-            return value;
         }
 
         // PUT api/values/5
