@@ -12,7 +12,9 @@ namespace Business.Abstract
     {
         IDataResult<User> Register(UserRegisterDto userRegisterDto);
         IDataResult<User> Login(UserLoginDto userLoginDto);
-        IResult userExists(string email);
+        IDataResult<User> UserExists(string email);
         IDataResult<AccessToken> CreateAccessToken(User user);
+        IDataResult<User> ResetPassword(User user, UserLoginDto userLoginDto);
+        IDataResult<int> Verification(string email);
     }
 }

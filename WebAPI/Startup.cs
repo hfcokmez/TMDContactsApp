@@ -56,6 +56,7 @@ namespace WebAPI
             services.AddScoped<ITokenHelper, JwtHelper>();
 
             var tokenOptions = Configuration.GetSection(key: "TokenOptions").Get<TokenOptions>();
+            services.Configure<TokenOptions>(Configuration.GetSection("TokenOptions"));
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {

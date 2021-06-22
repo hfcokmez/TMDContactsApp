@@ -39,6 +39,10 @@ namespace Core.Utilities.Contents
         //Register Messages:
         public static string UserAlreadyExists = "Bu email kullanılmaktadır.";
         public static string UserRegistered = "Kullanıcı sisteme başarıyla kayıt oldu.";
+        //Password Reset Messages:
+        public static string ResetSuccess = "Kullanıcının şifresi değiştirildi.";
+        public static string ResetFail = "Kullanıcının şifresinin değiştirilmesi sırasında bir hata meydana geldi.";
+        public static string UserNotificationFail = "Kullanıcıya şifre değiştirme kodu gönderilemedi.";
         //Token Messages:
         public static string AccessTokenCreated = "Access Token Oluşturuldu.";
     }

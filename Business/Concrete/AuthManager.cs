@@ -10,6 +10,10 @@ using Entities.Dto;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using MailKit.Net.Smtp;
+using MimeKit;
+using System.Net.Mail;
+using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
 namespace Business.Concrete
 {
@@ -38,11 +42,11 @@ namespace Business.Concrete
             {
                 return new ErrorDataResult<User>(Messages.UserNotFound);
             }
-            if (!HashingHelper.VerifyPasswordHash(userLoginDto.Password, userCheck.PasswordHash, userCheck.PasswordSalt))
+            if (!HashingHelper.VerifyPasswordHash(userLoginDto.Password, userCheck.Data.PasswordHash, userCheck.Data.PasswordSalt))
             {
                 return new ErrorDataResult<User>(Messages.WrongPassword);
             }
-            return new SuccessDataResult<User>(userCheck, Messages.SuccessLogin);
+            return new SuccessDataResult<User>(userCheck.Data, Messages.SuccessLogin);
         }
 
         public IDataResult<User> Register(UserRegisterDto userRegisterDto)
@@ -70,14 +74,51 @@ namespace Business.Concrete
             _userService.Add(user);
             return new SuccessDataResult<User>(user, Messages.UserRegistered);
         }
-
-        public IResult userExists(string email)
+        public IDataResult<int> Verification(string email)
         {
-            if (_userService.GetByEmail(email) != null)
+            int randomNumber = new Random().Next(1000, 10000);
+            //Email operations:
+            MimeMessage message = new MimeMessage();
+
+            MailboxAddress from = new MailboxAddress("TMD-ContactsApp", "brainwest400@gmail.com");
+            message.From.Add(from);
+            MailboxAddress to = new MailboxAddress("User", email);
+            message.To.Add(to);
+            message.Subject = "Şifre yenileme bilgilendirmesi.";
+
+            BodyBuilder bodyBuilder = new BodyBuilder();
+            bodyBuilder.HtmlBody = "<h1>Hello World!</h1>";
+            bodyBuilder.TextBody = randomNumber.ToString();
+            message.Body = bodyBuilder.ToMessageBody();
+
+            SmtpClient client = new SmtpClient();
+            client.Connect("smtp.gmail.com", 587, false);
+            client.Authenticate("brainwest400@gmail.com", "samsungmonte");
+            client.Send(message);
+            client.Disconnect(true);
+            client.Dispose();
+
+            return new SuccessDataResult<int>(randomNumber);
+        }
+        public IDataResult<User> ResetPassword(User user, UserLoginDto userLoginDto)
+        {
+            byte[] passwordHash, passwordSalt;
+            HashingHelper.CreatePasswordHash(userLoginDto.Password, out passwordHash, out passwordSalt);
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+            _userService.Update(user);
+
+            return new SuccessDataResult<User>(user, Messages.ResetSuccess);
+        }
+
+        public IDataResult<User> UserExists(string email)
+        {
+            var userExists = _userService.GetByEmail(email);
+            if (!userExists.Success)
             {
-                return new ErrorResult(Messages.UserAlreadyExists);
+                return new ErrorDataResult<User>(Messages.UserAlreadyExists);
             }
-            return new SuccessResult();
+            return new SuccessDataResult<User>(userExists.Data);
         }
     }
 }

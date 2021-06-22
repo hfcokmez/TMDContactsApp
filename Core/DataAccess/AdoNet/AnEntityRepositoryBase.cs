@@ -14,23 +14,24 @@ namespace Core.DataAccess.AdoNet
     {
         public void Add(TEntity entity)
         {
-            //using (var context = new TContext())
-            //{
-            //    string connectionString = context.Database.GetDbConnection().ConnectionString;
-            //    string cmdText = "";
-            //    using (SqlConnection connection = new SqlConnection(connectionString))
-            //    {
-            //        using (SqlCommand sqlCommand = new SqlCommand(cmdText, connection))
-            //        {
-            //            connection.Open();
-            //            if (sqlCommand.ExecuteNonQuery() > 0)
-            //            {
-                            
-            //            }
-            //            connection.Close();
-            //        }
-            //    }
-            //}
+            using (var context = new TContext())
+            {
+               
+                string connectionString = context.Database.GetDbConnection().ConnectionString;
+                string cmdText = "";
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand sqlCommand = new SqlCommand(cmdText, connection))
+                    {
+                        connection.Open();
+                        if (sqlCommand.ExecuteNonQuery() > 0)
+                        {
+
+                        }
+                        connection.Close();
+                    }
+                }
+            }
         }
 
         public void Delete(TEntity entity)
