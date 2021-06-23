@@ -21,13 +21,13 @@ namespace Core.Utilities.Security.Jwt
         private DateTime _accessTokenExpiration;
         public JwtHelper(IOptions<TokenOptions> tokenOptions)
         {
-            _tokenOptions = tokenOptions.Value;
-            _accessTokenExpiration = DateTime.Now.AddMinutes(_tokenOptions.AccessTokenExpiration);
+            _tokenOptions = tokenOptions.Value;            
         }
         public AccessToken CreateToken(User user)
         {
+            _accessTokenExpiration = DateTime.Now.AddMinutes(_tokenOptions.AccessTokenExpiration);
             var securityKey = SecurityKeyHelper.CreateSecurityKey(_tokenOptions.SecurityKey);
-            var singningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
+            var singningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var jwt = CreateJwtSecurityToken(_tokenOptions, user, singningCredentials);
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
             var token = jwtSecurityTokenHandler.WriteToken(jwt);

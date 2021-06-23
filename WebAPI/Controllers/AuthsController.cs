@@ -55,7 +55,7 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
-        [HttpPost(template: "Verification")]
+        [HttpGet(template: "Verification")]
         public IActionResult Verification(string email)
         {
             //Send the user an email:

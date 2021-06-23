@@ -10,7 +10,7 @@ namespace Entities.Concrete
         public int Id { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
-        public int Tel { get; set; }
+        public string Tel { get; set; }
         public string TelBusiness { get; set; }
         public string TelHome { get; set; }
         public string Email { get; set; }

@@ -31,6 +31,15 @@ namespace Business.Concrete
             return new SuccessResult(Messages.ContactDeleteSuccess);
         }
 
+        public IResult Delete(List<Contact> contacts)
+        { 
+            foreach (var contact in contacts)
+            {
+                _contactDal.Delete(contact);
+            }
+            return new SuccessResult(Messages.ContactsDeleteSuccess);
+        }
+
         public IDataResult<Contact> GetById(int contactId)
         {
             return new SuccessDataResult<Contact>(_contactDal.Get(filter: p=>p.Id == contactId));

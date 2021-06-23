@@ -10,6 +10,7 @@ namespace Core.Utilities.Contents
         public static string ContactAddSuccess = "Kişi rehbere başarıyla eklendi.";
         public static string ContactAddFail = "Rehbere kişi eklenme işlemi başarısız oldu.";
         public static string ContactDeleteSuccess = "Kişi rehberden başarıyla silindi.";
+        public static string ContactsDeleteSuccess = "Seçili kişiler rehberden başarıyla silindi.";
         public static string ContactDeleteFail = "Rehberden kişi silme işlemi başarısız oldu.";
         public static string ContactUpdateSuccess = "Kişi rehberde başarıyla güncellendi.";
         public static string ContactUpdateFail = "Rehberde kişi güncelleme işlemi başarısız oldu.";

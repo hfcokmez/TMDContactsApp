@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Business.Abstract;
+using Core.Entities.Concrete;
 using Entities.Concrete;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -76,6 +77,19 @@ namespace WebAPI.Controllers
         public IActionResult GetList()
         {
             var result = _groupService.GetList();
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            else
+            {
+                return BadRequest(result.Message);
+            }
+        }
+        [HttpGet(template: "GetUserGroups")]
+        public IActionResult GetUserGroups(User user)
+        {
+            var result = _groupService.GetList(user);
             if (result.Success)
             {
                 return Ok(result.Data);

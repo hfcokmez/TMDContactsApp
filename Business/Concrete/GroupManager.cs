@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Core.Entities.Concrete;
 using Core.Utilities.Contents;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
@@ -44,6 +45,11 @@ namespace Business.Concrete
         public IDataResult<List<Group>> GetList(int pageNumber, int pageSize)
         {
             return new SuccessDataResult<List<Group>>(_groupDal.GetList(pageNumber, pageSize).ToList());
+        }
+
+        public IDataResult<List<Group>> GetList(User user)
+        {
+            return new SuccessDataResult<List<Group>>(_groupDal.GetList(filter: p => p.UserId == user.Id).ToList());
         }
 
         public IResult Update(Group group)

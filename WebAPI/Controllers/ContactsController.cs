@@ -85,6 +85,19 @@ namespace WebAPI.Controllers
                 return BadRequest(result.Message);
             }
         }
+        [HttpPost(template: "DeleteMultiple")]
+        public IActionResult DeleteMultiple(List<Contact> contacts)
+        {
+            var result = _contactService.Delete(contacts);
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            else
+            {
+                return BadRequest(result.Message);
+            }
+        }
         [HttpPost(template: "Update")]
         public IActionResult Update(Contact contact)
         {

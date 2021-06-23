@@ -16,7 +16,7 @@ namespace Core.DataAccess.AdoNet
         {
             using (var context = new TContext())
             {
-               
+                  
                 string connectionString = context.Database.GetDbConnection().ConnectionString;
                 string cmdText = "";
                 using (SqlConnection connection = new SqlConnection(connectionString))
