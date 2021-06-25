@@ -47,7 +47,7 @@ namespace WebAPI
             });
             //Dependency Injection:                
             services.AddScoped<IContactService, ContactManager>();
-            services.AddScoped<IContactDal, EfContactDal>();
+            services.AddScoped<EContactDal, AnContactDal>();
 
             services.AddScoped<IUserService, UserManager>();
             services.AddScoped<IUserDal, EfUserDal>();
@@ -63,7 +63,6 @@ namespace WebAPI
 
             var tokenOptions = Configuration.GetSection(key: "TokenOptions").Get<TokenOptions>();
             services.Configure<TokenOptions>(Configuration.GetSection("TokenOptions"));
-
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -96,7 +95,6 @@ namespace WebAPI
                 .AllowAnyOrigin()
                 .AllowAnyHeader()
                 .AllowAnyMethod()); // allow credetials
-
             app.UseCors(options => options.AllowAnyOrigin());
             app.UseHttpsRedirection();
             app.UseAuthentication();

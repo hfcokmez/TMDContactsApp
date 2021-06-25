@@ -15,6 +15,7 @@ namespace Business.Abstract
         IDataResult<List<Group>> GetList(int pageNumber, int pageSize);
         IResult Add(Group group);
         IResult Delete(Group group);
+        IResult Delete(List<Group> groups);
         IResult Update(Group group);
     }
 }

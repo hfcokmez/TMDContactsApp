@@ -31,6 +31,14 @@ namespace Business.Concrete
             _userDal.Delete(user);
             return new SuccessResult(Messages.UserDeleteSuccess);
         }
+        public IResult Delete(List<User> users)
+        {
+            foreach (var user in users)
+            {
+                _userDal.Delete(user);
+            }
+            return new SuccessResult(Messages.UsersDeleteSuccess);
+        }
 
         public IDataResult<User> GetByEmail(string email)
         {

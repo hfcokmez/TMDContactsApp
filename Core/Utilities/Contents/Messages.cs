@@ -10,14 +10,17 @@ namespace Core.Utilities.Contents
         public static string ContactAddSuccess = "Kişi rehbere başarıyla eklendi.";
         public static string ContactAddFail = "Rehbere kişi eklenme işlemi başarısız oldu.";
         public static string ContactDeleteSuccess = "Kişi rehberden başarıyla silindi.";
-        public static string ContactsDeleteSuccess = "Seçili kişiler rehberden başarıyla silindi.";
+        public static string ContactsDeleteSuccess = "Kişiler rehberden başarıyla silindi.";
         public static string ContactDeleteFail = "Rehberden kişi silme işlemi başarısız oldu.";
         public static string ContactUpdateSuccess = "Kişi rehberde başarıyla güncellendi.";
         public static string ContactUpdateFail = "Rehberde kişi güncelleme işlemi başarısız oldu.";
+        public static string ContactGetFail = "Kişi bulunamadı.";
+        public static string ContactGetListFail = "Bu kullanıcıya ait kişiler bulunamadı.";
         //User Messages:
         public static string UserAddSuccess = "Kullanıcı başarıyla eklendi.";
         public static string UserAddFail = "Kullanıcı ekleme işlemi başarısız oldu.";
         public static string UserDeleteSuccess = "Kullanıcı başarıyla silindi.";
+        public static string UsersDeleteSuccess = "Kullanıcılar başarıyla silindi";
         public static string UserDeleteFail = "Kullanıcı silme işlemi başarısız oldu.";
         public static string UserUpdateSuccess = "Kullanıcı başarıyla güncellendi.";
         public static string UserUpdateFail = "Kullanıcı güncelleme işlemi başarısız oldu.";
@@ -25,6 +28,7 @@ namespace Core.Utilities.Contents
         public static string GroupAddSuccess = "Grup başarıyla eklendi.";
         public static string GroupAddFail = "Grup ekleme işlemi başarısız oldu.";
         public static string GroupDeleteSuccess = "Grup başarıyla silindi.";
+        public static string GroupsDeleteSuccess = "Gruplar başarıyla silindi.";
         public static string GroupDeleteFail = "Grup silme işlemi başarısız oldu.";
         public static string GroupUpdateSuccess = "Grup başarıyla güncellendi.";
         public static string GroupUpdateFail = "Grup güncelleme işlemi başarısız oldu.";

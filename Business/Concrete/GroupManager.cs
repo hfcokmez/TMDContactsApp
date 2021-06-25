@@ -31,6 +31,14 @@ namespace Business.Concrete
             _groupDal.Delete(group);
             return new SuccessResult(Messages.GroupDeleteSuccess);
         }
+        public IResult Delete(List<Group> groups)
+        {
+            foreach (var group in groups)
+            {
+                _groupDal.Delete(group);
+            }
+            return new SuccessResult(Messages.GroupDeleteSuccess);
+        }
 
         public IDataResult<Group> GetById(int groupId)
         {

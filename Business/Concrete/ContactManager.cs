@@ -12,57 +12,77 @@ namespace Business.Concrete
 {
     public class ContactManager: IContactService
     {
-        private IContactDal _contactDal;
+        private EContactDal _contactDal;
  
-        public ContactManager(IContactDal contactDal)
+        public ContactManager(EContactDal contactDal)
         {
             _contactDal = contactDal;
         }
 
         public IResult Add(Contact contact)
         {
-            _contactDal.Add(contact);
-            return new SuccessResult(Messages.ContactAddSuccess);
+            if (_contactDal.Add(contact, "AddContact"))
+            {
+                return new SuccessResult(Messages.ContactAddSuccess);
+            }
+            return new ErrorResult(Messages.ContactAddFail);
         }
 
         public IResult Delete(Contact contact)
         {
-            _contactDal.Delete(contact);
-            return new SuccessResult(Messages.ContactDeleteSuccess);
+            if (_contactDal.Delete(contact,"DeleteContact"))
+            {
+                return new SuccessResult(Messages.ContactDeleteSuccess);
+            }
+            return new ErrorResult(Messages.ContactDeleteFail);
         }
 
         public IResult Delete(List<Contact> contacts)
         { 
             foreach (var contact in contacts)
             {
-                _contactDal.Delete(contact);
+                _contactDal.Delete(contact,"DeleteContact");
             }
             return new SuccessResult(Messages.ContactsDeleteSuccess);
         }
 
         public IDataResult<Contact> GetById(int contactId)
         {
-            return new SuccessDataResult<Contact>(_contactDal.Get(filter: p=>p.Id == contactId));
+            Contact contact = _contactDal.Get(contactId,"GetContact");
+            if(contact != null)
+            {
+                return new SuccessDataResult<Contact>(contact);
+            }
+            return new ErrorDataResult<Contact>(Messages.ContactGetFail);
+            
         }
 
         public IDataResult<List<Contact>> GetList()
         {
-            return new SuccessDataResult<List<Contact>>(_contactDal.GetList().ToList());
+            return new SuccessDataResult<List<Contact>>(_contactDal.GetList("").ToList());
         }
         public IDataResult<List<Contact>> GetList(int pageNumber, int pageSize)
         {
-            return new SuccessDataResult<List<Contact>>(_contactDal.GetList(pageNumber, pageSize).ToList());
+            return new SuccessDataResult<List<Contact>>(_contactDal.GetList(pageNumber, pageSize, "").ToList());
         }
 
         public IDataResult<List<Contact>> GetListByUserId(int userId)
         {
-            return new SuccessDataResult<List<Contact>>(_contactDal.GetList(filter: p=>p.UserId == userId).ToList());
+            var contactList = _contactDal.GetList(userId,"GetContactsByUserId").ToList();
+            if(contactList != null)
+            {
+                return new SuccessDataResult<List<Contact>>(contactList);
+            }
+            return new ErrorDataResult<List<Contact>>(Messages.ContactGetListFail);
         }
 
         public IResult Update(Contact contact)
         {
-            _contactDal.Update(contact);
-            return new SuccessResult(Messages.ContactUpdateSuccess);
+            if (_contactDal.Update(contact,"UpdateContact"))
+            {
+                return new SuccessResult(Messages.ContactUpdateSuccess);
+            }
+            return new ErrorResult(Messages.ContactUpdateFail);
         }
     }
 }

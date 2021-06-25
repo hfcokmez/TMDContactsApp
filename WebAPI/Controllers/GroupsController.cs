@@ -47,6 +47,19 @@ namespace WebAPI.Controllers
                 return BadRequest(result.Message);
             }
         }
+        [HttpPost(template: "DeleteMultiple")]
+        public IActionResult DeleteMultiple(List<Group> groups)
+        {
+            var result = _groupService.Delete(groups);
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            else
+            {
+                return BadRequest(result.Message);
+            }
+        }
         [HttpPost(template: "Update")]
         public IActionResult Update(Group group)
         {
