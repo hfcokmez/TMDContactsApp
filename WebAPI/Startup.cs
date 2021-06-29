@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Business.Abstract;
 using Business.Concrete;
+using Core.Utilities.DataBind;
 using Core.Utilities.Security.Encryption;
 using Core.Utilities.Security.JsonWebToken;
 using Core.Utilities.Security.Jwt;
@@ -61,6 +62,16 @@ namespace WebAPI
             services.AddScoped<IAuthService, AuthManager>();
             services.AddScoped<ITokenHelper, JwtHelper>();
 
+            //AutoMappper:
+            var config = new AutoMapper.MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(new AutoMapperProfile());
+            }
+            );
+            var mapper = config.CreateMapper();
+            services.AddSingleton(mapper);
+
+            //Token Options:
             var tokenOptions = Configuration.GetSection(key: "TokenOptions").Get<TokenOptions>();
             services.Configure<TokenOptions>(Configuration.GetSection("TokenOptions"));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>

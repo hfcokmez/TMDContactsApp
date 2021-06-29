@@ -1,4 +1,5 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
 using Core.Utilities.Contents;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
@@ -13,7 +14,6 @@ namespace Business.Concrete
     public class GroupContactManager: IGroupContactService
     {
         private IGroupContactDal _groupContactDal;
-
         public GroupContactManager(IGroupContactDal groupContactDal)
         {
             _groupContactDal = groupContactDal;

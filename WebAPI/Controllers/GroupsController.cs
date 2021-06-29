@@ -100,9 +100,9 @@ namespace WebAPI.Controllers
             }
         }
         [HttpGet(template: "GetUserGroups")]
-        public IActionResult GetUserGroups(User user)
+        public IActionResult GetUserGroups(int userId)
         {
-            var result = _groupService.GetList(user);
+            var result = _groupService.GetList(userId);
             if (result.Success)
             {
                 return Ok(result.Data);

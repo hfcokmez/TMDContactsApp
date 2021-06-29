@@ -1,10 +1,13 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
+using Core.Entities.Concrete;
 using Core.Utilities.Contents;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 
@@ -13,7 +16,6 @@ namespace Business.Concrete
     public class ContactManager: IContactService
     {
         private EContactDal _contactDal;
- 
         public ContactManager(EContactDal contactDal)
         {
             _contactDal = contactDal;
@@ -48,7 +50,7 @@ namespace Business.Concrete
 
         public IDataResult<Contact> GetById(int contactId)
         {
-            Contact contact = _contactDal.Get(contactId,"GetContact");
+            var contact = _contactDal.Get(contactId,"GetContact");
             if(contact != null)
             {
                 return new SuccessDataResult<Contact>(contact);
@@ -59,7 +61,7 @@ namespace Business.Concrete
 
         public IDataResult<List<Contact>> GetList()
         {
-            return new SuccessDataResult<List<Contact>>(_contactDal.GetList("").ToList());
+            return new SuccessDataResult<List<Contact>>(_contactDal.GetList("GetAllContacts").ToList());
         }
         public IDataResult<List<Contact>> GetList(int pageNumber, int pageSize)
         {

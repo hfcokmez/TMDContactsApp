@@ -1,4 +1,5 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
 using Core.Entities.Concrete;
 using Core.Utilities.Contents;
 using Core.Utilities.Results;
@@ -14,7 +15,6 @@ namespace Business.Concrete
     public class GroupManager: IGroupService
     {
         private IGroupDal _groupDal;
-
         public GroupManager(IGroupDal groupDal)
         {
             _groupDal = groupDal;
@@ -55,9 +55,9 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Group>>(_groupDal.GetList(pageNumber, pageSize).ToList());
         }
 
-        public IDataResult<List<Group>> GetList(User user)
+        public IDataResult<List<Group>> GetList(int userId)
         {
-            return new SuccessDataResult<List<Group>>(_groupDal.GetList(filter: p => p.UserId == user.Id).ToList());
+            return new SuccessDataResult<List<Group>>(_groupDal.GetList(filter: p => p.UserId == userId).ToList());
         }
 
         public IResult Update(Group group)

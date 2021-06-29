@@ -1,4 +1,6 @@
-﻿using Core.DataAccess.AdoNet;
+﻿using AutoMapper;
+using Core.DataAccess.AdoNet;
+using Core.Entities.Concrete;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using System;

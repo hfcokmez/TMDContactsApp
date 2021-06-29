@@ -14,6 +14,7 @@ using MailKit.Net.Smtp;
 using MimeKit;
 using System.Net.Mail;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;
+using AutoMapper;
 
 namespace Business.Concrete
 {
@@ -21,11 +22,10 @@ namespace Business.Concrete
     {
         private IUserService _userService;
         private ITokenHelper _tokenHelper;
-
         public AuthManager(IUserService userService, ITokenHelper tokenHelper)
         {
             _userService = userService;
-            _tokenHelper = tokenHelper; 
+            _tokenHelper = tokenHelper;
         }
 
         public IDataResult<AccessToken> CreateAccessToken(User user)
