@@ -34,6 +34,7 @@ namespace Core.DataAccess.AdoNet
                 return true;
             }
         }
+
         public bool Update(TEntity entity, string sProcedure)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -107,6 +108,38 @@ namespace Core.DataAccess.AdoNet
             }
         }
 
+        public TEntity Get(string Email, string sProcedure)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                using (var command = new SqlCommand(sProcedure, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@Email", Email);
+                    SqlDataReader dataReader = command.ExecuteReader();
+                    if (dataReader.HasRows)
+                    {
+                        dataReader.Read();
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                    var Entity = new TEntity();
+                    object boxedObject = RuntimeHelpers.GetObjectValue(Entity);
+
+                    foreach (var property in Entity.GetType().GetProperties())
+                    {
+                        property.SetValue(boxedObject, dataReader[property.Name]);
+                    }
+                    Entity = (TEntity)boxedObject;
+                    connection.Close();
+                    return Entity;
+                }
+            }
+        }
+
         public IList<TEntity> GetList(string sProcedure)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -115,10 +148,8 @@ namespace Core.DataAccess.AdoNet
                 using (var command = new SqlCommand(sProcedure, connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
-
                     SqlDataReader dataReader = command.ExecuteReader();
                     var entityList = new List<TEntity>();
-
                     while (dataReader.Read())
                     {
                         var entity = new TEntity();
@@ -136,9 +167,7 @@ namespace Core.DataAccess.AdoNet
             }
         }
 
-        //Done by this line!________________________________________________________________________
-
-        public IList<TEntity> GetList(int Id, string sProcedure)
+        public IList<TEntity> GetList(int userId, string field, string sProcedure)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -146,10 +175,9 @@ namespace Core.DataAccess.AdoNet
                 using (var command = new SqlCommand(sProcedure, connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@Id", Id);
+                    command.Parameters.AddWithValue(String.Format("@{0}", field), userId);
                     SqlDataReader dataReader = command.ExecuteReader();
                     var entityList = new List<TEntity>();
-
                     while (dataReader.Read())
                     {
                         var entity = new TEntity();
@@ -167,10 +195,9 @@ namespace Core.DataAccess.AdoNet
             }
         }
 
-        public IList<TEntity> GetList(int pageNumber, int pageSize, string sProcedure)
+        public bool DeleteByGroup(IList<TEntity> entityList, string sProcedure)
         {
             throw new NotImplementedException();
         }
-
     }
 }

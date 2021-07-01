@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Business.Abstract;
+﻿using Business.Abstract;
 using Core.Utilities.Contents;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
@@ -13,32 +12,52 @@ namespace Business.Concrete
 {
     public class GroupContactManager: IGroupContactService
     {
-        private IGroupContactDal _groupContactDal;
-        public GroupContactManager(IGroupContactDal groupContactDal)
+        private EGroupContactDal _groupContactDal;
+        private EGroupDal _groupDal;
+        private EContactDal _contactDal;
+        public GroupContactManager(EGroupContactDal groupContactDal, EGroupDal groupDal, EContactDal contactDal)
         {
             _groupContactDal = groupContactDal;
+            _groupDal = groupDal;
+            _contactDal = contactDal;
         }
 
         public IResult Add(GroupContact groupContact)
         {
-            _groupContactDal.Add(groupContact);
-            return new SuccessResult(Messages.GroupContactAddSuccess);
+            if (_groupContactDal.Add(groupContact, "AddGroupContact"))
+            {
+                return new SuccessResult(Messages.GroupContactAddSuccess);
+            }
+            return new ErrorResult(Messages.GroupContactAddFail);
         }
 
         public IResult Delete(GroupContact groupContact)
         {
-            _groupContactDal.Delete(groupContact);
-            return new SuccessResult(Messages.GroupContactDeleteSuccess);
+            if (_groupContactDal.Delete(groupContact, "DeleteGroupContact"))
+            {
+                return new SuccessResult(Messages.GroupContactDeleteSuccess);
+            }
+            return new ErrorResult(Messages.GroupAddFail);
         }
 
-        public IDataResult<List<GroupContact>> GetListByContactId(int contactId)
+        public IDataResult<List<Group>> GetListByContactId(int contactId)
         {
-            return new SuccessDataResult<List<GroupContact>>(_groupContactDal.GetList(filter: p => p.ContactId == contactId).ToList());
+            List<Group> contactGroupList = _groupDal.GetList(contactId, "ContactId", "GetGroupsOfAContact").ToList();
+            if (contactGroupList != null)
+            {
+                return new SuccessDataResult<List<Group>>(contactGroupList);
+            }
+            return new ErrorDataResult<List<Group>>(Messages.GetGroupsOfAContactFail);
         }
 
-        public IDataResult<List<GroupContact>> GetListByGroupId(int groupId)
+        public IDataResult<List<Contact>> GetListByGroupId(int groupId)
         {
-            return new SuccessDataResult<List<GroupContact>>(_groupContactDal.GetList(filter: p => p.GroupId == groupId).ToList());
+            List<Contact> groupContactList = _contactDal.GetList(groupId, "GroupId", "GetContactsOfAGroup").ToList();
+            if (groupContactList != null)
+            {
+                return new SuccessDataResult<List<Contact>>(groupContactList);
+            }
+            return new ErrorDataResult<List<Contact>>(Messages.GetContactsOfAGroupFail);
         }
     }
 }

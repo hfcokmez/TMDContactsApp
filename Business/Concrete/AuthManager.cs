@@ -14,7 +14,6 @@ using MailKit.Net.Smtp;
 using MimeKit;
 using System.Net.Mail;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;
-using AutoMapper;
 
 namespace Business.Concrete
 {
@@ -114,11 +113,11 @@ namespace Business.Concrete
         public IDataResult<User> UserExists(string email)
         {
             var userExists = _userService.GetByEmail(email);
-            if (!userExists.Success)
+            if (userExists == null)
             {
-                return new ErrorDataResult<User>(Messages.UserAlreadyExists);
+                return new ErrorDataResult<User>();
             }
-            return new SuccessDataResult<User>(userExists.Data);
+            return new SuccessDataResult<User>(userExists.Data, Messages.UserAlreadyExists);
         }
     }
 }

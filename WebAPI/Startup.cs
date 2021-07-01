@@ -46,30 +46,22 @@ namespace WebAPI
             {
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
             });
+
             //Dependency Injection:                
             services.AddScoped<IContactService, ContactManager>();
             services.AddScoped<EContactDal, AnContactDal>();
 
             services.AddScoped<IUserService, UserManager>();
-            services.AddScoped<IUserDal, EfUserDal>();
+            services.AddScoped<EUserDal, AnUserDal>();
 
             services.AddScoped<IGroupService, GroupManager>();
-            services.AddScoped<IGroupDal, EfGroupDal>();
+            services.AddScoped<EGroupDal, AnGroupDal>();
 
             services.AddScoped<IGroupContactService, GroupContactManager>();
             services.AddScoped<IGroupContactDal, EfGroupContactDal>();
 
             services.AddScoped<IAuthService, AuthManager>();
             services.AddScoped<ITokenHelper, JwtHelper>();
-
-            //AutoMappper:
-            var config = new AutoMapper.MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new AutoMapperProfile());
-            }
-            );
-            var mapper = config.CreateMapper();
-            services.AddSingleton(mapper);
 
             //Token Options:
             var tokenOptions = Configuration.GetSection(key: "TokenOptions").Get<TokenOptions>();

@@ -8,8 +8,8 @@ namespace Business.Abstract
 {
     public interface IGroupContactService
     {
-        IDataResult<List<GroupContact>> GetListByGroupId(int groupId);
-        IDataResult<List<GroupContact>> GetListByContactId(int contactId);
+        IDataResult<List<Contact>> GetListByGroupId(int groupId);
+        IDataResult<List<Group>> GetListByContactId(int contactId);
         IResult Add(GroupContact groupContact);
         IResult Delete(GroupContact groupContact);
     }

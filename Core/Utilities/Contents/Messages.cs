@@ -32,11 +32,14 @@ namespace Core.Utilities.Contents
         public static string GroupDeleteFail = "Grup silme işlemi başarısız oldu.";
         public static string GroupUpdateSuccess = "Grup başarıyla güncellendi.";
         public static string GroupUpdateFail = "Grup güncelleme işlemi başarısız oldu.";
+        public static string GroupGetFail = "Grup bulunamadı.";
         //Group Contact Messages:
         public static string GroupContactAddSuccess = "Kişi gruba başarıyla eklendi.";
         public static string GroupContactAddFail = "Kişi gruba eklenemedi.";
         public static string GroupContactDeleteSuccess = "Kişi gruptan başarıyla silindi.";
         public static string GroupContactDeleteFail = "Kişi gruptan silinemedi.";
+        public static string GetGroupsOfAContactFail = "Kişinin bulunduğu gruplar bulunamadı.";
+        public static string GetContactsOfAGroupFail = "Grupta bulunan kişiler bulunamadı.";
         //Login Messages:
         public static string UserNotFound = "Kullanıcı bulunamadı.";
         public static string WrongPassword = "Girdiğiniz şifre hatalıdır.";

@@ -13,55 +13,62 @@ namespace Business.Concrete
 {
     public class UserManager : IUserService
     {
-        private IUserDal _userDal;
-        public UserManager(IUserDal userDal)
+        private EUserDal _userDal;
+        public UserManager(EUserDal userDal)
         {
             _userDal = userDal;
         }
 
         public IResult Add(User user)
         {
-            _userDal.Add(user);
-            return new SuccessResult(Messages.UserAddSuccess);
+            if (_userDal.Add(user, "AddUser"))
+            {
+                return new SuccessResult(Messages.UserAddSuccess);
+            }
+            return new ErrorResult(Messages.UserAddFail);
         }
 
         public IResult Delete(User user)
         {
-            _userDal.Delete(user);
-            return new SuccessResult(Messages.UserDeleteSuccess);
+            if (_userDal.Delete(user, "DeleteUser"))
+            {
+                return new SuccessResult(Messages.UserDeleteSuccess);
+            }
+            return new ErrorResult(Messages.UserDeleteFail);
         }
         public IResult Delete(List<User> users)
         {
-            foreach (var user in users)
-            {
-                _userDal.Delete(user);
-            }
-            return new SuccessResult(Messages.UsersDeleteSuccess);
+            return null;
         }
 
         public IDataResult<User> GetByEmail(string email)
         {
-            return new SuccessDataResult<User>(_userDal.Get(p => p.Email == email));
+            var user = _userDal.Get(email, "GetUserByEmail");
+            if(user != null)
+            {
+                return new SuccessDataResult<User>(user);
+            }
+            return null;
         }
 
         public IDataResult<User> GetById(int userId)
         {
-            return new SuccessDataResult<User>(_userDal.Get(p => p.Id == userId));
+            return new SuccessDataResult<User>(_userDal.Get(userId, "GetUserById"));
         }
 
         public IDataResult<List<User>> GetList()
         {
-            return new SuccessDataResult<List<User>>(_userDal.GetList().ToList());
+            return new SuccessDataResult<List<User>>(_userDal.GetList("GetAllUsers").ToList());
         }
 
         public List<OperationClaim> GetUserOperationClaims(User user)
         {
-            return new List<OperationClaim>(_userDal.GetClaims(user));
+            return null;
         }
 
         public IResult Update(User user)
         {
-            _userDal.Update(user);
+            _userDal.Update(user, "UpdateUser");
             return new SuccessResult(Messages.UserUpdateSuccess);
         }
     }
