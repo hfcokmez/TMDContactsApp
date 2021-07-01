@@ -64,11 +64,6 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Group>>(_groupDal.GetList("GetAllGroups").ToList());
         }
 
-        public IDataResult<List<Group>> GetList(int pageNumber, int pageSize)
-        {
-            return null;
-        }
-
         public IDataResult<List<Group>> GetList(int userId)
         {
             var groupList = _groupDal.GetList(userId, "UserId", "GetGroupsByUserId").ToList();

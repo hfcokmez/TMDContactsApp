@@ -15,7 +15,7 @@ namespace Core
         IList<T> GetList(int id, string parameter, string sProcedure);
         bool Add(T entity, string sProcedure);
         bool Delete(T entity, string sProcedure);
-        bool DeleteByGroup(IList<T> entityList, string sProcedure);
+        bool DeleteList(IList<T> entityList, string sProcedure);
         bool Update(T entity, string sProcedure);
     }
 }

@@ -58,7 +58,7 @@ namespace WebAPI
             services.AddScoped<EGroupDal, AnGroupDal>();
 
             services.AddScoped<IGroupContactService, GroupContactManager>();
-            services.AddScoped<IGroupContactDal, EfGroupContactDal>();
+            services.AddScoped<EGroupContactDal, AnGroupContactDal>();
 
             services.AddScoped<IAuthService, AuthManager>();
             services.AddScoped<ITokenHelper, JwtHelper>();
