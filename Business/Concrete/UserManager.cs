@@ -53,7 +53,7 @@ namespace Business.Concrete
 
         public IDataResult<User> GetById(int userId)
         {
-            return new SuccessDataResult<User>(_userDal.Get(userId, "GetUserById"));
+            return new SuccessDataResult<User>(_userDal.Get(userId, "GetUser"));
         }
 
         public IDataResult<List<User>> GetList()
