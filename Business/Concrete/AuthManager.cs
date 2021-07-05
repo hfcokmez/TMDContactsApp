@@ -70,8 +70,13 @@ namespace Business.Concrete
                 BirthDate = userRegisterDto.BirthDate,
                 Note = userRegisterDto.Note,
             };
-            _userService.Add(user);
-            return new SuccessDataResult<User>(user, Messages.UserRegistered);
+            var result = _userService.Add(user);
+            if (result.Success)
+            {
+                return new SuccessDataResult<User>(user, Messages.UserRegistered);
+            }
+            else return new ErrorDataResult<User>(user, Messages.UserAddFail);
+
         }
         public IDataResult<int> Verification(string email)
         {
