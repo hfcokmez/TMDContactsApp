@@ -1,10 +1,8 @@
 ﻿using Core.Entities;
-using Dapper;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Core.DataAccess.AdoNet
@@ -34,7 +32,7 @@ namespace Core.DataAccess.AdoNet
                                 command.Parameters.AddWithValue($"@{property.Name}", property.GetValue(entity, null));
                                 continue;
                             }
-                            else command.Parameters.AddWithValue($"@{property.Name}", DBNull.Value);   
+                            else command.Parameters.AddWithValue($"@{property.Name}", DBNull.Value);
                         }
                         new SqlDataAdapter(command).Fill(dataset);
                     }
@@ -68,7 +66,6 @@ namespace Core.DataAccess.AdoNet
                                 command.Parameters.AddWithValue($"@{property.Name}", property.GetValue(entity, null));
                                 continue;
                             }
-                            else command.Parameters.AddWithValue($"@{property.Name}", DBNull.Value);
                         }
                         new SqlDataAdapter(command).Fill(dataset);
                     }
@@ -83,37 +80,7 @@ namespace Core.DataAccess.AdoNet
             }
         }
 
-        public bool Delete(TEntity entity, string sProcedure)
-        {
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                DataSet dataset = new DataSet();
-                try
-                {
-                    connection.Open();
-                    using (var command = new SqlCommand(sProcedure, connection))
-                    {
-                        command.CommandType = CommandType.StoredProcedure;
-                        foreach (var property in entity.GetType().GetProperties())
-                        {
-                            if (String.Equals(property.Name, "Id"))
-                            {
-                                command.Parameters.AddWithValue("@Id", property.GetValue(entity, null));
-                                break;
-                            }
-                        }
-                        new SqlDataAdapter(command).Fill(dataset);
-                    }
-                    connection.Close();
-                    return true;
-                }
-                catch (Exception)
-                {
-                    connection.Close();
-                    return false;
-                }
-            }
-        }
+
 
         public TEntity Get(int Id, string sProcedure)
         {
@@ -312,10 +279,67 @@ namespace Core.DataAccess.AdoNet
 
             }
         }
-
-        public bool DeleteList(IList<TEntity> entityList, string sProcedure)
+        public bool Delete(int entity, string sProcedure)
         {
-            throw new NotImplementedException();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    using (SqlCommand command = new SqlCommand(sProcedure, connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.Add("@Id", SqlDbType.Int);
+                        command.Parameters["@Id"].Value = (entity);
+                        connection.Open();
+                        int result = command.ExecuteNonQuery();
+                        connection.Close();
+                        if (result > 0)return true;
+                        else return false;
+                    }
+                }
+                catch (Exception)
+                {
+                    connection.Close();
+                    return false;
+                }
+            }
+        }
+        public bool Delete(IList<int> entityList, string sProcedure)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlTransaction transaction = null;
+                try
+                {
+                    connection.Open();
+                    transaction = connection.BeginTransaction();
+                    using (SqlCommand command = new SqlCommand(sProcedure, connection, transaction))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.Add("@Id", SqlDbType.Int);
+                        foreach (int entity in entityList)
+                        {
+                            command.Parameters["@Id"].Value = (entity);
+                            int result = command.ExecuteNonQuery();
+                            if (result <= 0)
+                            {
+                                transaction.Rollback();
+                                connection.Close();
+                                return false;
+                            }
+                        }
+                        transaction.Commit();
+                        connection.Close();
+                        return true;
+                    }
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    connection.Close();
+                    return false;
+                }
+            }
         }
     }
 }

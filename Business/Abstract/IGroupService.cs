@@ -13,8 +13,8 @@ namespace Business.Abstract
         IDataResult<List<Group>> GetList();
         IDataResult<List<Group>> GetList(int Id);
         IResult Add(Group group);
-        IResult Delete(Group group);
-        IResult Delete(List<Group> groups);
+        IResult Delete(int group);
+        IResult Delete(List<int> groups);
         IResult Update(Group group);
     }
 }

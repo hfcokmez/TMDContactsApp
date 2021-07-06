@@ -74,7 +74,7 @@ namespace WebAPI.Controllers
             }
         }
         [HttpPost(template: "Delete")]
-        public IActionResult Delete(Contact contact)
+        public IActionResult Delete(int contact)
         {
             var result = _contactService.Delete(contact);
             if (result.Success)
@@ -87,7 +87,7 @@ namespace WebAPI.Controllers
             }
         }
         [HttpPost(template: "DeleteMultiple")]
-        public IActionResult DeleteMultiple(List<Contact> contacts)
+        public IActionResult DeleteMultiple(List<int> contacts)
         {
             var result = _contactService.Delete(contacts);
             if (result.Success)

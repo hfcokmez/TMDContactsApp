@@ -28,7 +28,7 @@ namespace Business.Concrete
             return new ErrorResult(Messages.UserAddFail);
         }
 
-        public IResult Delete(User user)
+        public IResult Delete(int user)
         {
             if (_userDal.Delete(user, "DeleteUser"))
             {
@@ -36,9 +36,13 @@ namespace Business.Concrete
             }
             return new ErrorResult(Messages.UserDeleteFail);
         }
-        public IResult Delete(List<User> users)
+        public IResult Delete(List<int> users)
         {
-            return null;
+            if (_userDal.Delete(users, "DeleteUser"))
+            {
+                return new SuccessResult(Messages.UsersDeleteSuccess);
+            }
+            return new ErrorResult(Messages.UserDeleteFail);
         }
 
         public IDataResult<User> GetByEmail(string email)

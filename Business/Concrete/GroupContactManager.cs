@@ -31,7 +31,7 @@ namespace Business.Concrete
             return new ErrorResult(Messages.GroupContactAddFail);
         }
 
-        public IResult Delete(GroupContact groupContact)
+        public IResult Delete(int groupContact)
         {
             if (_groupContactDal.Delete(groupContact, "DeleteGroupContact"))
             {

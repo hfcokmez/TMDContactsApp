@@ -33,7 +33,7 @@ namespace WebAPI.Controllers
             }
         }
         [HttpPost(template: "Delete")]
-        public IActionResult Delete(GroupContact groupContact)
+        public IActionResult Delete(int groupContact)
         {
             var result = _groupContactService.Delete(groupContact);
             if (result.Success)

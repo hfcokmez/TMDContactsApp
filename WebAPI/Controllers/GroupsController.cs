@@ -35,7 +35,7 @@ namespace WebAPI.Controllers
             }
         }
         [HttpPost(template: "Delete")]
-        public IActionResult Delete(Group group)
+        public IActionResult Delete(int group)
         {
             var result = _groupService.Delete(group);
             if (result.Success)
@@ -48,7 +48,7 @@ namespace WebAPI.Controllers
             }
         }
         [HttpPost(template: "DeleteMultiple")]
-        public IActionResult DeleteMultiple(List<Group> groups)
+        public IActionResult DeleteMultiple(List<int> groups)
         {
             var result = _groupService.Delete(groups);
             if (result.Success)

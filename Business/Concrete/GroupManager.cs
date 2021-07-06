@@ -28,7 +28,7 @@ namespace Business.Concrete
             return new ErrorResult(Messages.GroupAddFail);
         }
 
-        public IResult Delete(Group group)
+        public IResult Delete(int group)
         {
             if (_groupDal.Delete(group, "DeleteGroup"))
             {
@@ -36,17 +36,13 @@ namespace Business.Concrete
             }
             return new ErrorResult(Messages.GroupDeleteFail);
         }
-        public IResult Delete(List<Group> groups)
+        public IResult Delete(List<int> groups)
         {
-            foreach (var group in groups)
+            if (_groupDal.Delete(groups, "DeleteGroup"))
             {
-                if (_groupDal.Delete(group, "DeleteGroup"))
-                {
-                    return new SuccessResult(Messages.GroupDeleteSuccess);
-                }
-                return new ErrorResult(Messages.GroupDeleteFail);
+                return new SuccessResult(Messages.GroupsDeleteSuccess);
             }
-            return new SuccessResult(Messages.GroupDeleteSuccess);
+            return new ErrorResult(Messages.GroupDeleteFail);
         }
 
         public IDataResult<Group> GetById(int groupId)

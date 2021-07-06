@@ -14,8 +14,8 @@ namespace Business.Abstract
         IDataResult<List<Contact>> GetList(int pageNumber, int pageSize);
         IDataResult<List<Contact>> GetListByUserId(int userId);
         IResult Add(Contact contact);
-        IResult Delete(Contact contact);
-        IResult Delete(List<Contact> contacts);
+        IResult Delete(int contact);
+        IResult Delete(List<int> contacts);
         IResult Update(Contact contact);
     }
 }

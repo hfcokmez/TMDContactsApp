@@ -31,7 +31,7 @@ namespace Business.Concrete
             return new ErrorResult(Messages.ContactAddFail);
         }
 
-        public IResult Delete(Contact contact)
+        public IResult Delete(int contact)
         {
             if (_contactDal.Delete(contact,"DeleteContact"))
             {
@@ -40,13 +40,13 @@ namespace Business.Concrete
             return new ErrorResult(Messages.ContactDeleteFail);
         }
 
-        public IResult Delete(List<Contact> contacts)
+        public IResult Delete(List<int> contacts)
         { 
-            foreach (var contact in contacts)
+            if(_contactDal.Delete(contacts,"DeleteContact"))
             {
-                _contactDal.Delete(contact,"DeleteContact");
+                return new SuccessResult(Messages.ContactsDeleteSuccess);
             }
-            return new SuccessResult(Messages.ContactsDeleteSuccess);
+            return new ErrorResult(Messages.ContactDeleteFail);
         }
 
         public IDataResult<Contact> GetById(int contactId)
