@@ -31,13 +31,13 @@ namespace Business.Concrete
             return new ErrorResult(Messages.GroupContactAddFail);
         }
 
-        public IResult Delete(int groupContact)
+        public IResult Delete(GroupContact groupContact)
         {
             if (_groupContactDal.Delete(groupContact, "DeleteGroupContact"))
             {
                 return new SuccessResult(Messages.GroupContactDeleteSuccess);
             }
-            return new ErrorResult(Messages.GroupAddFail);
+            return new ErrorResult(Messages.GroupContactDeleteFail);
         }
 
         public IDataResult<List<Group>> GetListByContactId(int contactId)

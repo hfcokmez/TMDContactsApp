@@ -10,7 +10,7 @@ namespace Core.DataAccess.AdoNet
     public class AnEntityRepositoryBase<TEntity> : EEntityRepository<TEntity>
         where TEntity : class, IEntity, new()
     {
-        private readonly static string connectionString = @"Server=TESTWEBDB\TESTWEBDB02;Database=TMDContacts;User Id=db_testadmin;Password=sabahsoft;Trusted_Connection=False;MultipleActiveResultSets=true;";
+        protected readonly static string connectionString = @"Server=TESTWEBDB\TESTWEBDB02;Database=TMDContacts;User Id=db_testadmin;Password=sabahsoft;Trusted_Connection=False;MultipleActiveResultSets=true;";
 
         public bool Add(TEntity entity, string sProcedure)
         {

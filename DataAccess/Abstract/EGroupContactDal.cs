@@ -8,5 +8,6 @@ namespace DataAccess.Abstract
 {
     public interface EGroupContactDal: EEntityRepository<GroupContact>
     {
+        bool Delete(GroupContact groupContact, string sProcedure);
     }
 }

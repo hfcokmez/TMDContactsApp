@@ -11,6 +11,6 @@ namespace Business.Abstract
         IDataResult<List<Contact>> GetListByGroupId(int groupId);
         IDataResult<List<Group>> GetListByContactId(int contactId);
         IResult Add(GroupContact groupContact);
-        IResult Delete(int groupContact);
+        IResult Delete(GroupContact groupContact);
     }
 }

@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using Business.Abstract;
 using Core.Utilities.Contents;
 using Entities.Dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
+    [AllowAnonymous()]
     [ApiController]
     public class AuthsController : ControllerBase
     {
