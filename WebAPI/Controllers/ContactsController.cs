@@ -23,7 +23,6 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet(template:"GetAll")]
-        [Authorize]
         public IActionResult GetAll()
         {
             var result = _contactService.GetList();

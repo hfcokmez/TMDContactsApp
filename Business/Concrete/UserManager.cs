@@ -62,15 +62,7 @@ namespace Business.Concrete
 
         public IDataResult<List<User>> GetList()
         {
-            try
-            {
-                var userList = _userDal.GetList("GetAllUsers").ToList();
-                return new SuccessDataResult<List<User>>(userList);
-            }
-            catch (ArgumentNullException)
-            {
-                return new ErrorDataResult<List<User>>(Messages.UserGetFail);
-            }
+            return new SuccessDataResult<List<User>>(_userDal.GetList("GetAllUsers").ToList());
         }
 
         public List<OperationClaim> GetUserOperationClaims(User user)

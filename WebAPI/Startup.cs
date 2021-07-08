@@ -1,6 +1,5 @@
 ﻿using Business.Abstract;
 using Business.Concrete;
-using Core.Entities.Services;
 using Core.Utilities.Security.Encryption;
 using Core.Utilities.Security.JsonWebToken;
 using Core.Utilities.Security.Jwt;
@@ -56,7 +55,6 @@ namespace WebAPI
 
             services.AddScoped<IAuthService, AuthManager>();
             services.AddScoped<ITokenHelper, JwtHelper>();
-            services.AddScoped<IEmailSendHelper, EmailSendHelper>();
 
             //Token Options:
             var tokenOptions = Configuration.GetSection(key: "TokenOptions").Get<TokenOptions>();
