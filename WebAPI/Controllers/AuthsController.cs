@@ -60,6 +60,11 @@ namespace WebAPI.Controllers
         [HttpGet(template: "Verification")]
         public IActionResult Verification(string email)
         {
+            var userExists = _authService.UserExists(email);
+            if (!userExists.Success)
+            {
+                return BadRequest(userExists.Message);
+            }
             //Send the user an email:
             var mailResult = _authService.Verification(email);
             if (mailResult.Success)
@@ -99,6 +104,21 @@ namespace WebAPI.Controllers
             }
             return Ok(passwordReset.Message);
         }
-        
+        [HttpPost(template: "ResetPasswordVerification")]
+        public IActionResult ResetPasswordVerification(UserLoginDto userLoginDto, string currentPassword)
+        {
+            var userExists = _authService.UserExists(userLoginDto.Email);
+            if (!userExists.Success)
+            {
+                return BadRequest(userExists.Message);
+            }
+
+            var passwordReset = _authService.ResetPassword(userExists.Data, userLoginDto, currentPassword);
+            if (!passwordReset.Success)
+            {
+                return BadRequest(passwordReset.Message);
+            }
+            return Ok(passwordReset.Message);
+        }
     }
 }

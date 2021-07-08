@@ -42,22 +42,28 @@ namespace Business.Concrete
 
         public IDataResult<List<Group>> GetListByContactId(int contactId)
         {
-            List<Group> contactGroupList = _groupDal.GetList(contactId, "ContactId", "GetGroupsOfAContact").ToList();
-            if (contactGroupList != null)
+            try
             {
+                var contactGroupList = _groupDal.GetList(contactId, "ContactId", "GetGroupsOfAContact").ToList();
                 return new SuccessDataResult<List<Group>>(contactGroupList);
             }
-            return new ErrorDataResult<List<Group>>(Messages.GetGroupsOfAContactFail);
+            catch (ArgumentNullException)
+            {
+                return new ErrorDataResult<List<Group>>(Messages.GetGroupsOfAContactFail);
+            }
         }
 
         public IDataResult<List<Contact>> GetListByGroupId(int groupId)
         {
-            List<Contact> groupContactList = _contactDal.GetList(groupId, "GroupId", "GetContactsOfAGroup").ToList();
-            if (groupContactList != null)
+            try
             {
+                var groupContactList = _contactDal.GetList(groupId, "GroupId", "GetContactsOfAGroup").ToList();
                 return new SuccessDataResult<List<Contact>>(groupContactList);
             }
-            return new ErrorDataResult<List<Contact>>(Messages.GetContactsOfAGroupFail);
+            catch (ArgumentNullException)
+            {
+                return new ErrorDataResult<List<Contact>>(Messages.GetContactsOfAGroupFail);
+            }
         }
     }
 }

@@ -57,17 +57,28 @@ namespace Business.Concrete
 
         public IDataResult<List<Group>> GetList()
         {
-            return new SuccessDataResult<List<Group>>(_groupDal.GetList("GetAllGroups").ToList());
+            try
+            {
+                var groupList = _groupDal.GetList("GetAllGroups").ToList();
+                return new SuccessDataResult<List<Group>>(groupList);
+            }
+            catch (ArgumentNullException)
+            {
+                return new ErrorDataResult<List<Group>>(Messages.GroupGetFail);
+            }
         }
 
         public IDataResult<List<Group>> GetList(int userId)
         {
-            var groupList = _groupDal.GetList(userId, "UserId", "GetGroupsByUserId").ToList();
-            if (groupList != null)
+            try
             {
+                var groupList = _groupDal.GetList(userId, "UserId", "GetGroupsByUserId").ToList();
                 return new SuccessDataResult<List<Group>>(groupList);
             }
-            return new ErrorDataResult<List<Group>>(Messages.GroupGetFail);
+            catch (ArgumentNullException)
+            {
+                return new ErrorDataResult<List<Group>>(Messages.GroupGetFail);
+            }
         }
 
         public IResult Update(Group group)

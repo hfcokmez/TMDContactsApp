@@ -24,6 +24,7 @@ namespace Core.Utilities.Contents
         public static string UserDeleteFail = "Kullanıcı silme işlemi başarısız oldu.";
         public static string UserUpdateSuccess = "Kullanıcı başarıyla güncellendi.";
         public static string UserUpdateFail = "Kullanıcı güncelleme işlemi başarısız oldu.";
+        public static string UserGetFail = "Kullanıcı bulunamadı.";
         //Group Messages:
         public static string GroupAddSuccess = "Grup başarıyla eklendi.";
         public static string GroupAddFail = "Grup ekleme işlemi başarısız oldu.";
@@ -39,7 +40,7 @@ namespace Core.Utilities.Contents
         public static string GroupContactDeleteSuccess = "Kişi gruptan başarıyla silindi.";
         public static string GroupContactDeleteFail = "Kişi gruptan silinemedi.";
         public static string GetGroupsOfAContactFail = "Kişinin bulunduğu gruplar bulunamadı.";
-        public static string GetContactsOfAGroupFail = "Grupta bulunan kişiler bulunamadı.";
+        public static string GetContactsOfAGroupFail = "Grupta kişi bulunamadı.";
         //Login Messages:
         public static string UserNotFound = "Kullanıcı bulunamadı.";
         public static string WrongPassword = "Girdiğiniz şifre hatalıdır.";
@@ -48,6 +49,7 @@ namespace Core.Utilities.Contents
         public static string UserAlreadyExists = "Bu email kullanılmaktadır.";
         public static string UserRegistered = "Kullanıcı sisteme başarıyla kayıt oldu.";
         //Password Reset Messages:
+        public static string PasswordsNotMatched = "Kullanıcının girdiği şifre geçerli şifresi ile eşleşmiyor.";
         public static string ResetSuccess = "Kullanıcının şifresi değiştirildi.";
         public static string ResetFail = "Kullanıcının şifresinin değiştirilmesi sırasında bir hata meydana geldi.";
         public static string UserNotificationFail = "Kullanıcıya şifre değiştirme kodu gönderilemedi.";

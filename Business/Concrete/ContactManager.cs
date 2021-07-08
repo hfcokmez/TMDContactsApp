@@ -1,18 +1,15 @@
 ﻿using Business.Abstract;
-using Core.Entities.Concrete;
 using Core.Utilities.Contents;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
 
 namespace Business.Concrete
 {
-    public class ContactManager: IContactService
+    public class ContactManager : IContactService
     {
         private EContactDal _contactDal;
         private EGroupDal _groupDal;
@@ -33,7 +30,7 @@ namespace Business.Concrete
 
         public IResult Delete(int contact)
         {
-            if (_contactDal.Delete(contact,"DeleteContact"))
+            if (_contactDal.Delete(contact, "DeleteContact"))
             {
                 return new SuccessResult(Messages.ContactDeleteSuccess);
             }
@@ -41,8 +38,8 @@ namespace Business.Concrete
         }
 
         public IResult Delete(List<int> contacts)
-        { 
-            if(_contactDal.Delete(contacts,"DeleteContact"))
+        {
+            if (_contactDal.Delete(contacts, "DeleteContact"))
             {
                 return new SuccessResult(Messages.ContactsDeleteSuccess);
             }
@@ -51,8 +48,8 @@ namespace Business.Concrete
 
         public IDataResult<Contact> GetById(int contactId)
         {
-            var contact = _contactDal.Get(contactId,"GetContact");
-            if(contact != null)
+            var contact = _contactDal.Get(contactId, "GetContact");
+            if (contact != null)
             {
                 return new SuccessDataResult<Contact>(contact);
             }
@@ -61,7 +58,15 @@ namespace Business.Concrete
 
         public IDataResult<List<Contact>> GetList()
         {
-            return new SuccessDataResult<List<Contact>>(_contactDal.GetList("GetAllContacts").ToList());
+            try
+            {
+                var contactList = _contactDal.GetList("GetAllContacts").ToList();
+                return new SuccessDataResult<List<Contact>>(contactList);
+            }
+            catch (ArgumentNullException)
+            {
+                return new ErrorDataResult<List<Contact>>(Messages.ContactGetListFail);
+            }
         }
         public IDataResult<List<Contact>> GetList(int pageNumber, int pageSize)
         {
@@ -69,28 +74,34 @@ namespace Business.Concrete
         }
 
         public IDataResult<List<Contact>> GetListByUserId(int userId)
-        { 
-            var contactList = _contactDal.GetList(userId, "UserId", "GetContactsByUserId").ToList();
-            if(contactList != null)
+        {
+            try
             {
+                var contactList = _contactDal.GetList(userId, "UserId", "GetContactsByUserId").ToList();
                 return new SuccessDataResult<List<Contact>>(contactList);
             }
-            return new ErrorDataResult<List<Contact>>(Messages.ContactGetListFail);
+            catch (ArgumentNullException)
+            {
+                return new ErrorDataResult<List<Contact>>(Messages.ContactGetListFail);
+            }
         }
 
         public IDataResult<List<Group>> GetListByContactId(int contactId)
         {
-            List<Group> contactGroupList = _groupDal.GetList(contactId, "ContactId", "GetGroupsOfAContact").ToList();
-            if (contactGroupList != null)
+            try
             {
+                var contactGroupList = _groupDal.GetList(contactId, "ContactId", "GetGroupsOfAContact").ToList();
                 return new SuccessDataResult<List<Group>>(contactGroupList);
             }
-            return new ErrorDataResult<List<Group>>(Messages.GetGroupsOfAContactFail);
+            catch (ArgumentNullException)
+            {
+                return new ErrorDataResult<List<Group>>(Messages.GetGroupsOfAContactFail);
+            }
         }
 
         public IResult Update(Contact contact)
         {
-            if (_contactDal.Update(contact,"UpdateContact"))
+            if (_contactDal.Update(contact, "UpdateContact"))
             {
                 return new SuccessResult(Messages.ContactUpdateSuccess);
             }
