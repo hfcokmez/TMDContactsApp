@@ -1,0 +1,13 @@
+﻿using Core;
+using Entities.Concrete;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace DataAccess.Abstract
+{
+    public interface IGroupContactDal: IEntityRepository<GroupContact>
+    {
+        bool Delete(GroupContact groupContact, string sProcedure);
+    }
+}

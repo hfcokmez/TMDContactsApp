@@ -1,18 +1,23 @@
 ﻿using Core.Entities;
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
+using System.Data;
+using System.Data.SqlClient;
 using System.Text;
 
-namespace Core.DataAccess
+namespace Core
 {
-    public interface IEntityRepository<T> where T:class, IEntity, new()
+    public interface IEntityRepository<T> where T : class, IEntity, new()
     {
-        T Get(Expression<Func<T, bool>> filter);
-        IList<T> GetList(Expression<Func<T, bool>> filter=null);
-        IList<T> GetList(int pageNumber, int pageSize);
-        void Add(T entity);
-        void Delete(T entity);
-        void Update(T entity);
+        T Get(int id, string sProcedure);
+        T Get(string parameter, string field, string sProcedure);
+        T Get(dynamic dto, string sProcedure);
+        IList<T> GetList(string sProcedure);
+        IList<T> GetList(int id, string field, string sProcedure);
+        IList<T> GetList(dynamic dto, string sProcedure);
+        bool Add(T entity, string sProcedure);
+        bool Delete(int entity, string sProcedure);
+        bool Delete(IList<int> entityList, string sProcedure);
+        bool Update(T entity, string sProcedure);
     }
 }

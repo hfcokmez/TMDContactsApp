@@ -23,6 +23,7 @@ namespace Core.Utilities.Security.Jwt
         {
             _tokenOptions = tokenOptions.Value;            
         }
+
         public AccessToken CreateToken(User user)
         {
             _accessTokenExpiration = DateTime.Now.AddMinutes(_tokenOptions.AccessTokenExpiration);

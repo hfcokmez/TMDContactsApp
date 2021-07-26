@@ -1,8 +1,11 @@
 ﻿using Business.Abstract;
 using Business.Concrete;
+using Core.Entities;
+using Core.Entities.Services;
 using Core.Utilities.Security.Encryption;
 using Core.Utilities.Security.JsonWebToken;
 using Core.Utilities.Security.Jwt;
+using Core.Utilities.Services;
 using DataAccess.Abstract;
 using DataAccess.Concrete;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -42,19 +45,20 @@ namespace WebAPI
 
             //Dependency Injection:                
             services.AddScoped<IContactService, ContactManager>();
-            services.AddScoped<EContactDal, AnContactDal>();
+            services.AddScoped<IContactDal, AnContactDal>();
 
             services.AddScoped<IUserService, UserManager>();
-            services.AddScoped<EUserDal, AnUserDal>();
+            services.AddScoped<IUserDal, AnUserDal>();
 
             services.AddScoped<IGroupService, GroupManager>();
-            services.AddScoped<EGroupDal, AnGroupDal>();
+            services.AddScoped<IGroupDal, AnGroupDal>();
 
             services.AddScoped<IGroupContactService, GroupContactManager>();
-            services.AddScoped<EGroupContactDal, AnGroupContactDal>();
+            services.AddScoped<IGroupContactDal, AnGroupContactDal>();
 
             services.AddScoped<IAuthService, AuthManager>();
             services.AddScoped<ITokenHelper, JwtHelper>();
+            services.AddScoped<IEmailSendHelper, EmailSendHelper>();
 
             //Token Options:
             var tokenOptions = Configuration.GetSection(key: "TokenOptions").Get<TokenOptions>();

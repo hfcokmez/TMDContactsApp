@@ -12,10 +12,10 @@ namespace Business.Concrete
 {
     public class GroupContactManager: IGroupContactService
     {
-        private EGroupContactDal _groupContactDal;
-        private EGroupDal _groupDal;
-        private EContactDal _contactDal;
-        public GroupContactManager(EGroupContactDal groupContactDal, EGroupDal groupDal, EContactDal contactDal)
+        private IGroupContactDal _groupContactDal;
+        private IGroupDal _groupDal;
+        private IContactDal _contactDal;
+        public GroupContactManager(IGroupContactDal groupContactDal, IGroupDal groupDal, IContactDal contactDal)
         {
             _groupContactDal = groupContactDal;
             _groupDal = groupDal;
@@ -24,6 +24,8 @@ namespace Business.Concrete
 
         public IResult Add(GroupContact groupContact)
         {
+            var dto = new { GroupId = groupContact.GroupId, ContactId = groupContact.ContactId };
+            if (_groupContactDal.GetList(dto, "GetGroupContact") != null) return new ErrorResult(Messages.ContactAlreadyExistInGroup);
             if (_groupContactDal.Add(groupContact, "AddGroupContact"))
             {
                 return new SuccessResult(Messages.GroupContactAddSuccess);
@@ -42,22 +44,42 @@ namespace Business.Concrete
 
         public IDataResult<List<Group>> GetListByContactId(int contactId)
         {
-            List<Group> contactGroupList = _groupDal.GetList(contactId, "ContactId", "GetGroupsOfAContact").ToList();
-            if (contactGroupList != null)
+            try
             {
+                var contactGroupList = _groupDal.GetList(contactId, "ContactId", "GetGroupsOfAContact").ToList();
                 return new SuccessDataResult<List<Group>>(contactGroupList);
             }
-            return new ErrorDataResult<List<Group>>(Messages.GetGroupsOfAContactFail);
+            catch (ArgumentNullException)
+            {
+                return new ErrorDataResult<List<Group>>(Messages.GetGroupsOfAContactFail);
+            }
         }
 
         public IDataResult<List<Contact>> GetListByGroupId(int groupId)
         {
-            List<Contact> groupContactList = _contactDal.GetList(groupId, "GroupId", "GetContactsOfAGroup").ToList();
-            if (groupContactList != null)
+            try
             {
+                var groupContactList = _contactDal.GetList(groupId, "GroupId", "GetContactsOfAGroup").ToList();
                 return new SuccessDataResult<List<Contact>>(groupContactList);
             }
-            return new ErrorDataResult<List<Contact>>(Messages.GetContactsOfAGroupFail);
+            catch (ArgumentNullException)
+            {
+                return new ErrorDataResult<List<Contact>>(Messages.GetContactsOfAGroupFail);
+            }
+        }
+
+        public IDataResult<List<Contact>> GetListByGroupId(int groupId, int pageNumber, int pageSize)
+        {
+            var groupDto = new { GroupId = groupId, PageNumber = pageNumber, PageSize = pageSize};
+            try
+            {
+                var groupContactList = _contactDal.GetList(groupDto, "GetContactsOfAGroupPagination").ToList();
+                return new SuccessDataResult<List<Contact>>(groupContactList);
+            }
+            catch (ArgumentNullException)
+            {
+                return new ErrorDataResult<List<Contact>>(Messages.GetContactsOfAGroupFail);
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace DataAccess.Concrete
 {
-    public class AnUserDal: AnEntityRepositoryBase<User>, EUserDal
+    public class AnUserDal: AnEntityRepositoryBase<User>, IUserDal
     {
     }
 }

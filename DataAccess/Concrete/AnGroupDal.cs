@@ -7,7 +7,11 @@ using System.Text;
 
 namespace DataAccess.Concrete
 {
-    public class AnGroupDal: AnEntityRepositoryBase<Group>, EGroupDal
+    public class AnGroupDal : AnEntityRepositoryBase<Group>, IGroupDal
     {
+        public Group Get(Group group, string procedure)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

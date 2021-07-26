@@ -2,28 +2,30 @@
 using Core.Entities.Concrete;
 using Core.Utilities.Contents;
 using Core.Utilities.Results;
+using Core.Utilities.Services;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
 
 namespace Business.Concrete
 {
-    public class ContactManager: IContactService
+    public class ContactManager : IContactService
     {
-        private EContactDal _contactDal;
-        private EGroupDal _groupDal;
-        public ContactManager(EContactDal contactDal, EGroupDal groupDal)
+        private IContactDal _contactDal;
+        private IGroupDal _groupDal;
+        private IUserService _userService;
+        public ContactManager(IContactDal contactDal, IGroupDal groupDal, IUserService userService)
         {
             _contactDal = contactDal;
             _groupDal = groupDal;
+            _userService = userService;
         }
 
         public IResult Add(Contact contact)
         {
+            if(IsUserInContactsList(contact.UserId, contact.Tel).Success) return new ErrorResult(Messages.ContactAlreadyExist);
             if (_contactDal.Add(contact, "AddContact"))
             {
                 return new SuccessResult(Messages.ContactAddSuccess);
@@ -33,7 +35,7 @@ namespace Business.Concrete
 
         public IResult Delete(int contact)
         {
-            if (_contactDal.Delete(contact,"DeleteContact"))
+            if (_contactDal.Delete(contact, "DeleteContact"))
             {
                 return new SuccessResult(Messages.ContactDeleteSuccess);
             }
@@ -41,8 +43,8 @@ namespace Business.Concrete
         }
 
         public IResult Delete(List<int> contacts)
-        { 
-            if(_contactDal.Delete(contacts,"DeleteContact"))
+        {
+            if (_contactDal.Delete(contacts, "DeleteContact"))
             {
                 return new SuccessResult(Messages.ContactsDeleteSuccess);
             }
@@ -51,8 +53,8 @@ namespace Business.Concrete
 
         public IDataResult<Contact> GetById(int contactId)
         {
-            var contact = _contactDal.Get(contactId,"GetContact");
-            if(contact != null)
+            var contact = _contactDal.Get(contactId, "GetContact");
+            if (contact != null)
             {
                 return new SuccessDataResult<Contact>(contact);
             }
@@ -61,40 +63,99 @@ namespace Business.Concrete
 
         public IDataResult<List<Contact>> GetList()
         {
-            return new SuccessDataResult<List<Contact>>(_contactDal.GetList("GetAllContacts").ToList());
+            try
+            {
+                var contactList = _contactDal.GetList("GetAllContacts").ToList();
+                return new SuccessDataResult<List<Contact>>(contactList);
+            }
+            catch (ArgumentNullException)
+            {
+                return new ErrorDataResult<List<Contact>>(Messages.ContactGetListFail);
+            }
         }
-        public IDataResult<List<Contact>> GetList(int pageNumber, int pageSize)
+
+        public IDataResult<List<Contact>> GetListByUserId(int userId, int pageNumber, int pageSize)
         {
-            return null;
+            var userDto = new { UserId = userId, PageNumber = pageNumber, PageSize = pageSize };
+            try
+            {
+                var contactList = _contactDal.GetList(userDto, "GetContactsByUserIdPagination").ToList();
+                return new SuccessDataResult<List<Contact>>(contactList);
+            }
+            catch (ArgumentNullException)
+            {
+                return new ErrorDataResult<List<Contact>>(Messages.ContactGetListFail);
+            }
         }
 
         public IDataResult<List<Contact>> GetListByUserId(int userId)
-        { 
-            var contactList = _contactDal.GetList(userId, "UserId", "GetContactsByUserId").ToList();
-            if(contactList != null)
+        {
+            try
             {
+                var contactList = _contactDal.GetList(userId, "UserId", "GetContactsByUserId").ToList();
                 return new SuccessDataResult<List<Contact>>(contactList);
             }
-            return new ErrorDataResult<List<Contact>>(Messages.ContactGetListFail);
+            catch (ArgumentNullException)
+            {
+                return new ErrorDataResult<List<Contact>>(Messages.ContactGetListFail);
+            }
         }
 
         public IDataResult<List<Group>> GetListByContactId(int contactId)
         {
-            List<Group> contactGroupList = _groupDal.GetList(contactId, "ContactId", "GetGroupsOfAContact").ToList();
-            if (contactGroupList != null)
+            try
             {
+                var contactGroupList = _groupDal.GetList(contactId, "ContactId", "GetGroupsOfAContact").ToList();
                 return new SuccessDataResult<List<Group>>(contactGroupList);
             }
-            return new ErrorDataResult<List<Group>>(Messages.GetGroupsOfAContactFail);
+            catch (ArgumentNullException)
+            {
+                return new ErrorDataResult<List<Group>>(Messages.GetGroupsOfAContactFail);
+            }
         }
 
         public IResult Update(Contact contact)
         {
-            if (_contactDal.Update(contact,"UpdateContact"))
+            if (_contactDal.Update(contact, "UpdateContact"))
             {
                 return new SuccessResult(Messages.ContactUpdateSuccess);
             }
             return new ErrorResult(Messages.ContactUpdateFail);
+        }
+
+        public IDataResult<Contact> IsUserInContactsList(int userId, string tel)
+        {
+            var userDto = new
+            {
+                @Id = userId,
+                @Tel = tel
+            };
+            var contact = _contactDal.Get(userDto, "IsUserInContactsList");
+            if (contact != null)
+            {
+                return new SuccessDataResult<Contact>(contact);
+            }
+            return new ErrorDataResult<Contact>();
+        }
+
+        public IResult AddWithSynch(Contact contact)
+        {
+            var userCheck = _userService.GetByTel(contact.Tel);
+            if (userCheck.Success)
+            {
+                var tel = _userService.GetById(contact.UserId).Data.Tel;
+                var userInContactList = IsUserInContactsList(userCheck.Data.Id, tel);
+                if (userInContactList.Success)
+                {
+                    var contactExist = ObjectBindHelper.ObjectToObject<User, Contact>(userCheck.Data, contact);
+                    var resultExist = Add(contactExist);
+                    if (resultExist.Success) return new SuccessResult(resultExist.Message);
+                    else return new ErrorResult(resultExist.Message);
+                }
+            }
+            var result = Add(contact);
+            if (result.Success) return new SuccessResult(result.Message);
+            else return new ErrorResult(result.Message);
         }
     }
 }

@@ -13,8 +13,8 @@ namespace Business.Concrete
 {
     public class UserManager : IUserService
     {
-        private EUserDal _userDal;
-        public UserManager(EUserDal userDal)
+        private IUserDal _userDal;
+        public UserManager(IUserDal userDal)
         {
             _userDal = userDal;
         }
@@ -36,6 +36,7 @@ namespace Business.Concrete
             }
             return new ErrorResult(Messages.UserDeleteFail);
         }
+
         public IResult Delete(List<int> users)
         {
             if (_userDal.Delete(users, "DeleteUser"))
@@ -47,22 +48,45 @@ namespace Business.Concrete
 
         public IDataResult<User> GetByEmail(string email)
         {
-            var user = _userDal.Get(email, "GetUserByEmail");
+            var user = _userDal.Get(email, "Email", "GetUserByEmail");
             if(user != null)
             {
                 return new SuccessDataResult<User>(user);
             }
-            return null;
+            return new ErrorDataResult<User>(Messages.UserNotFound);
         }
 
         public IDataResult<User> GetById(int userId)
         {
-            return new SuccessDataResult<User>(_userDal.Get(userId, "GetUser"));
+            var user = _userDal.Get(userId, "GetUser");
+            if(user != null)
+            {
+                return new SuccessDataResult<User>(user);
+            }
+            return new ErrorDataResult<User>(Messages.UserNotFound);
+        }
+
+        public IDataResult<User> GetByTel(string tel)
+        {
+            var user = _userDal.Get(tel, "Tel", "GetUserByTel");
+            if (user != null)
+            {
+                return new SuccessDataResult<User>(user, Messages.UserTelAlreadyExist);
+            }
+            return new ErrorDataResult<User>(Messages.UserNotFound);
         }
 
         public IDataResult<List<User>> GetList()
         {
-            return new SuccessDataResult<List<User>>(_userDal.GetList("GetAllUsers").ToList());
+            try
+            {
+                var userList = _userDal.GetList("GetAllUsers").ToList();
+                return new SuccessDataResult<List<User>>(userList);
+            }
+            catch (ArgumentNullException)
+            {
+                return new ErrorDataResult<List<User>>(Messages.UserGetFail);
+            }
         }
 
         public List<OperationClaim> GetUserOperationClaims(User user)
@@ -72,8 +96,8 @@ namespace Business.Concrete
 
         public IResult Update(User user)
         {
-            _userDal.Update(user, "UpdateUser");
-            return new SuccessResult(Messages.UserUpdateSuccess);
+            if(_userDal.Update(user, "UpdateUser")) return new SuccessResult(Messages.UserUpdateSuccess);
+            return new ErrorResult(Messages.UserUpdateFail);
         }
     }
 }

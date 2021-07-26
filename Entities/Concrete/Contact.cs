@@ -8,6 +8,7 @@ namespace Entities.Concrete
     public class Contact: IEntity
     {
         public int Id { get; set; }
+        public int UserId { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
         public string Tel { get; set; }
@@ -20,6 +21,5 @@ namespace Entities.Concrete
         public string Title { get; set; }
         public string BirthDate { get; set; }
         public string Note { get; set; }
-        public int UserId { get; set; }
     }
 }

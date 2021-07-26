@@ -9,7 +9,7 @@ using System.Text;
 
 namespace DataAccess.Concrete
 {
-    public class AnGroupContactDal: AnEntityRepositoryBase<GroupContact>, EGroupContactDal
+    public class AnGroupContactDal: AnEntityRepositoryBase<GroupContact>, IGroupContactDal
     {
         public bool Delete(GroupContact groupContact, string sProcedure)
         {
