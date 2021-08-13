@@ -1,0 +1,18 @@
+﻿@model ContactListViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<table class="table table-responsive">
+    @foreach(var contact in Model.Contacts)
+    {
+    <tr>
+        <td>@contact.Name</td>
+        <td>@contact.Surname</td>
+        <td>@contact.Tel</td>
+        <td>@contact.Email</td>
+    </tr>
+    }
+</table>

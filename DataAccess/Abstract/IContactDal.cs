@@ -11,6 +11,5 @@ namespace DataAccess.Abstract
 {
     public interface IContactDal: IEntityRepository<Contact>
     {
-        Contact Get(int id, string tel, string sProcedure);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Core.Entities.Concrete;
 using Core.Utilities.Results;
 using Entities.Concrete;
+using Entities.Dto;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,7 +12,7 @@ namespace Business.Abstract
     {
         IDataResult<Contact> GetById(int contactId);
         IDataResult<List<Contact>> GetList();
-        IDataResult<List<Contact>> GetListByUserId(int userId, int pageNumber, int pageSize);
+        IDataResult<PaginationDto<Contact>> GetListByUserId(int userId, int pageNumber, int pageSize);
         IDataResult<List<Contact>> GetListByUserId(int userId);
         IDataResult<Contact> IsUserInContactsList(int userId, string tel);
         IResult Add(Contact contact);

@@ -1,0 +1,13 @@
+﻿@model GroupListViewModel
+@{
+    ViewData["Title"] = "Group";
+}
+
+<h2>Group</h2>
+
+<ul>
+    @foreach(var group in Model.Groups)
+    {
+        <li>@group.Name</li>
+    }
+</ul>

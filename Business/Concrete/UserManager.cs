@@ -96,7 +96,11 @@ namespace Business.Concrete
 
         public IResult Update(User user)
         {
-            if(_userDal.Update(user, "UpdateUser")) return new SuccessResult(Messages.UserUpdateSuccess);
+            var result = GetById(user.Id);
+            if (!result.Success) return result;
+            user.PasswordHash = null;
+            user.PasswordSalt = null;
+            if (_userDal.Update(user, "UpdateUser")) return new SuccessResult(Messages.UserUpdateSuccess);
             return new ErrorResult(Messages.UserUpdateFail);
         }
     }

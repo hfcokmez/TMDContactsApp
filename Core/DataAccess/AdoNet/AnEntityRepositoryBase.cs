@@ -64,7 +64,6 @@ namespace Core.DataAccess.AdoNet
                             if (property.GetValue(entity, null) != null)
                             {
                                 command.Parameters.AddWithValue($"@{property.Name}", property.GetValue(entity, null));
-                                continue;
                             }
                             else if (property.PropertyType == typeof(System.Byte[]))
                             {
@@ -72,7 +71,7 @@ namespace Core.DataAccess.AdoNet
                             }
                             else command.Parameters.AddWithValue($"@{property.Name}", DBNull.Value);
                         }
-                        new SqlDataAdapter(command).Fill(dataset);
+                        var a = new SqlDataAdapter(command).Fill(dataset);
                         connection.Close();
                         return true;
                     }
@@ -270,14 +269,15 @@ namespace Core.DataAccess.AdoNet
                         command.Parameters.Add("@Id", SqlDbType.Int);
                         command.Parameters["@Id"].Value = (entity);
                         connection.Open();
-                        int result = command.ExecuteNonQuery();
+                        var result = command.ExecuteNonQuery();
                         connection.Close();
                         if (result > 0) return true;
                         else return false;
                     }
                 }
-                catch (Exception)
+                catch (Exception exeption)
                 {
+                    var ex = exeption;
                     connection.Close();
                     return false;
                 }
@@ -405,6 +405,35 @@ namespace Core.DataAccess.AdoNet
                 {
                     connection.Close();
                     return null;
+                }
+            }
+        }
+
+        public int GetCount(dynamic dto, string propertyName, string sProcedure)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    using (var command = new SqlCommand(sProcedure, connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        foreach (var property in dto.GetType().GetProperties())
+                        {
+                            command.Parameters.AddWithValue($"@{property.Name}", property.GetValue(dto, null));
+                        }
+                        SqlDataReader dataReader = command.ExecuteReader();
+                        if (dataReader.HasRows) dataReader.Read();
+                        var result = dataReader.GetInt32(0);
+                        connection.Close();
+                        return result;
+                    }
+                }
+                catch (Exception)
+                {
+                    connection.Close();
+                    return 0;
                 }
             }
         }

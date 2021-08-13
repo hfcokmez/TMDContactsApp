@@ -93,29 +93,29 @@ namespace Business.Concrete
             //return new ErrorDataResult<int>();
         }
 
-        public IDataResult<User> ResetPassword(UserLoginDto userLoginDto)
+        public IResult ResetPassword(UserLoginDto userLoginDto)
         {
             var user = UserExists(userLoginDto.Email);
             if (!user.Success)
             {
                 return new ErrorDataResult<User>(user.Message);
             }
-            if (Login(userLoginDto).Success) return new ErrorDataResult<User>(Messages.SamePasswordFail);
+            if (Login(userLoginDto).Success) return new ErrorResult(Messages.SamePasswordFail);
 
             HashingHelper.CreatePasswordHash(userLoginDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
             user.Data.PasswordHash = passwordHash;
             user.Data.PasswordSalt = passwordSalt;
             _userService.Update(user.Data);
 
-            return new SuccessDataResult<User>(user.Data, Messages.ResetSuccess);
+            return new SuccessResult(Messages.ResetSuccess);
         }
 
-        public IDataResult<User> ResetPassword(UserLoginDto userLoginDto, string currentPassword)
+        public IResult ResetPassword(UserLoginDto userLoginDto, string currentPassword)
         {
             UserLoginDto test = new UserLoginDto { Email = userLoginDto.Email, Password = currentPassword };
             var user = Login(test);
-            if (!user.Success) return new ErrorDataResult<User>(user.Message);
-            if (Login(userLoginDto).Success) return new ErrorDataResult<User>(Messages.SamePasswordFail);
+            if (!user.Success) return new ErrorResult(user.Message);
+            if (Login(userLoginDto).Success) return new ErrorResult(Messages.SamePasswordFail);
 
             if (HashingHelper.VerifyPasswordHash(currentPassword, user.Data.PasswordHash, user.Data.PasswordSalt))
             {
@@ -123,10 +123,10 @@ namespace Business.Concrete
                 user.Data.PasswordHash = passwordHash;
                 user.Data.PasswordSalt = passwordSalt;
                 var result = _userService.Update(user.Data);
-                if (result.Success) return new SuccessDataResult<User>(user.Data, Messages.ResetSuccess);
-                else return new ErrorDataResult<User>(Messages.UserUpdateFail);
+                if (result.Success) return new SuccessResult( Messages.ResetSuccess);
+                else return new ErrorResult(Messages.UserUpdateFail);
             }
-            else return new ErrorDataResult<User>(Messages.PasswordsNotMatched);
+            else return new ErrorResult(Messages.PasswordsNotMatched);
         }
         public IDataResult<User> UserExists(string email)
         {

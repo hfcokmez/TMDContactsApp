@@ -1,0 +1,24 @@
+﻿@model MvcWebUI.Models.ContactListViewModel
+@{
+    ViewBag.Title = "View";
+}
+
+<h2>Contact List</h2>
+
+<table class="table table-responsive">
+    <tr>
+        <td>Name</td>
+        <td>Surname</td>
+        <td>Tel</td>
+        <td>Email</td>
+    </tr>
+    @foreach (var contact in Model.Contacts)
+    {
+        <tr>
+            <td>@contact.Name</td>
+            <td>@contact.Surname</td>
+            <td>@contact.Tel</td>
+            <td>@contact.Email</td>
+        </tr>
+    }
+</table>

@@ -8,6 +8,5 @@ namespace DataAccess.Abstract
 {
     public interface IGroupDal: IEntityRepository<Group>
     {
-        Group Get(Group group, string procedure);
     }
 }

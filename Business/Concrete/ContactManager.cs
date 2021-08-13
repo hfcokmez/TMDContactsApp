@@ -5,6 +5,7 @@ using Core.Utilities.Results;
 using Core.Utilities.Services;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace Business.Concrete
 
         public IResult Add(Contact contact)
         {
-            if(IsUserInContactsList(contact.UserId, contact.Tel).Success) return new ErrorResult(Messages.ContactAlreadyExist);
+            if (IsUserInContactsList(contact.UserId, contact.Tel).Success) return new ErrorResult(Messages.ContactAlreadyExist);
             if (_contactDal.Add(contact, "AddContact"))
             {
                 return new SuccessResult(Messages.ContactAddSuccess);
@@ -74,25 +75,35 @@ namespace Business.Concrete
             }
         }
 
-        public IDataResult<List<Contact>> GetListByUserId(int userId, int pageNumber, int pageSize)
+        public IDataResult<PaginationDto<Contact>> GetListByUserId(int userId, int pageNumber, int pageSize)
         {
-            var userDto = new { UserId = userId, PageNumber = pageNumber, PageSize = pageSize };
-            try
+            var contactCount = _contactDal.GetCount(new { UserId = userId }, "Count", "GetContactCountByUserId");
+            if (contactCount > 0)
             {
-                var contactList = _contactDal.GetList(userDto, "GetContactsByUserIdPagination").ToList();
-                return new SuccessDataResult<List<Contact>>(contactList);
+                var contactList = _contactDal.GetList(new { UserId = userId, PageNumber = pageNumber, PageSize = pageSize },
+                    "GetContactsByUserIdPagination").ToList();
+                var result = new PaginationDto<Contact>
+                {
+                    Data = contactList,
+                    CurrentPage = pageNumber,
+                    LastPage = contactCount / pageSize,
+                    PageSize = pageSize,
+                    TotalCount = contactCount
+                };
+                if (contactCount % pageSize > 0) result.LastPage = (contactCount / pageSize) + 1;
+                else result.LastPage = contactCount / pageSize;
+                if (pageNumber > 1) result.PreviousPage = pageNumber - 1;
+                if (pageNumber < result.LastPage) result.NextPage = pageNumber + 1;
+                return new SuccessDataResult<PaginationDto<Contact>>(result);
             }
-            catch (ArgumentNullException)
-            {
-                return new ErrorDataResult<List<Contact>>(Messages.ContactGetListFail);
-            }
+                return new ErrorDataResult<PaginationDto<Contact>>(Messages.ContactGetListFail);
         }
 
         public IDataResult<List<Contact>> GetListByUserId(int userId)
         {
             try
             {
-                var contactList = _contactDal.GetList(userId, "UserId", "GetContactsByUserId").ToList();
+                var contactList = _contactDal.GetList(new { @UserId = userId }, "GetContactsByUserId").ToList();
                 return new SuccessDataResult<List<Contact>>(contactList);
             }
             catch (ArgumentNullException)
@@ -125,12 +136,7 @@ namespace Business.Concrete
 
         public IDataResult<Contact> IsUserInContactsList(int userId, string tel)
         {
-            var userDto = new
-            {
-                @Id = userId,
-                @Tel = tel
-            };
-            var contact = _contactDal.Get(userDto, "IsUserInContactsList");
+            var contact = _contactDal.Get(new { @Id = userId, @Tel = tel }, "IsUserInContactsList");
             if (contact != null)
             {
                 return new SuccessDataResult<Contact>(contact);

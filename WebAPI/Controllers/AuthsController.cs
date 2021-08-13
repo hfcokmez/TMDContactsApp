@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
-    [AllowAnonymous()]
     [ApiController]
     public class AuthsController : ControllerBase
     {
@@ -27,54 +26,55 @@ namespace WebAPI.Controllers
         public IActionResult Login(UserLoginDto userLoginDto)
         {
             var userLogin = _authService.Login(userLoginDto);
-            if (!userLogin.Success)return BadRequest(userLogin.Message);
+            if (!userLogin.Success)return BadRequest(userLogin);
             var result = _authService.CreateAccessToken(userLogin.Data);
             if (result.Success)return Ok(result.Data);
-            return BadRequest(result.Message);
+            return BadRequest(result);
         }
         [HttpPost(template: "Register")]
         public IActionResult Register(UserRegisterDto userRegisterDto)
         {
             var userRegister = _authService.Register(userRegisterDto);
-            if (!userRegister.Success)return BadRequest(userRegister.Message);
+            if (!userRegister.Success)return BadRequest(userRegister);
             var result = _authService.CreateAccessToken(userRegister.Data);
             if (result.Success)return Ok(result.Data);
-            return BadRequest(result.Message);
+            return BadRequest(result);
         }
         [HttpPost(template: "RefreshToken")]
         public IActionResult RefreshToken(User user)
         {
             var result = _authService.CreateAccessToken(user);
             if (result.Success)return Ok(result.Data);
-            return BadRequest(result.Message);
+            return BadRequest(result);
         }
         [HttpGet(template: "Verification")]
         public IActionResult Verification(string email)
         {
-            var mailResult = _authService.Verification(email);
-            if (mailResult.Success)return Ok(mailResult.Data);
-            return BadRequest();
+            var result = _authService.Verification(email);
+            if (result.Success)return Ok(result.Data);
+            return BadRequest(result);
         }
         [HttpPost(template: "ForgotPassword")]
         public IActionResult ForgotPassword(string email)
         {
-            var mailResult = _authService.Verification(email);
-            if (mailResult.Success)return Ok(mailResult.Data);
-            return BadRequest();
+            var result = _authService.Verification(email);
+            if (result.Success)return Ok(result.Data);
+            return BadRequest(result);
         }
         [HttpPost(template: "ResetPassword")]
         public IActionResult ResetPassword(UserLoginDto userLoginDto)
         {
-            var passwordReset = _authService.ResetPassword(userLoginDto);
-            if (!passwordReset.Success)return BadRequest(passwordReset.Message);
-            return Ok(passwordReset.Message);
+            var result = _authService.ResetPassword(userLoginDto);
+            if (!result.Success)return BadRequest(result);
+            return Ok(result);
         }
         [HttpPost(template: "ResetPasswordVerification")]
+        [Authorize]
         public IActionResult ResetPasswordVerification(UserLoginDto userLoginDto, string currentPassword)
         {
-            var passwordReset = _authService.ResetPassword(userLoginDto, currentPassword);
-            if (!passwordReset.Success)return BadRequest(passwordReset.Message);
-            return Ok(passwordReset.Message);
+            var result = _authService.ResetPassword(userLoginDto, currentPassword);
+            if (!result.Success)return BadRequest(result);
+            return Ok(result);
         }
     }
 }

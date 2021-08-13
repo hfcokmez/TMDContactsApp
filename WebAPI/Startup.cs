@@ -1,11 +1,9 @@
 ﻿using Business.Abstract;
 using Business.Concrete;
-using Core.Entities;
 using Core.Entities.Services;
 using Core.Utilities.Security.Encryption;
 using Core.Utilities.Security.JsonWebToken;
 using Core.Utilities.Security.Jwt;
-using Core.Utilities.Services;
 using DataAccess.Abstract;
 using DataAccess.Concrete;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -16,7 +14,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace WebAPI
@@ -33,10 +33,40 @@ namespace WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddJsonOptions(opt => opt.SerializerSettings.ContractResolver = new DefaultContractResolver());
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPI", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "TMDContact Application Official API", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n 
+                      Enter 'Bearer' [space] and then your token in the text input below.
+                      \r\n\r\nExample: 'Bearer 12345abcdef'",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                                },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header,
+                        },
+                        new List<string>()
+                    }
+                });
+
             });
             services.AddCors(c =>
             {
@@ -64,7 +94,8 @@ namespace WebAPI
             var tokenOptions = Configuration.GetSection(key: "TokenOptions").Get<TokenOptions>();
 
             services.Configure<TokenOptions>(Configuration.GetSection("TokenOptions"));
-            services.AddAuthentication(options => {
+            services.AddAuthentication(options =>
+            {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }
@@ -83,11 +114,13 @@ namespace WebAPI
                 };
                 options.Events = new JwtBearerEvents
                 {
-                    OnTokenValidated = ctx => {
+                    OnTokenValidated = ctx =>
+                    {
                         //Gerekirse burada gelen token içerisindeki çeşitli bilgilere göre doğrulama yapılabilir.
                         return Task.CompletedTask;
                     },
-                    OnAuthenticationFailed = ctx => {
+                    OnAuthenticationFailed = ctx =>
+                    {
                         Console.WriteLine("Exception:{0}", ctx.Exception.Message);
                         return Task.CompletedTask;
                     }
