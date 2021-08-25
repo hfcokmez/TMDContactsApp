@@ -1,9 +1,12 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
+using Business.AutoMapper;
 using Business.Concrete;
 using Core.Entities.Services;
 using Core.Utilities.Security.Encryption;
 using Core.Utilities.Security.JsonWebToken;
 using Core.Utilities.Security.Jwt;
+using DataAccess;
 using DataAccess.Abstract;
 using DataAccess.Concrete;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -72,8 +75,17 @@ namespace WebAPI
             {
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
             });
+            // Auto Mapper Configurations
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new UserProfile());
+            });
 
-            //Dependency Injection:                
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
+            //Dependency Injection:   
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            
             services.AddScoped<IContactService, ContactManager>();
             services.AddScoped<IContactDal, AnContactDal>();
 
@@ -88,7 +100,6 @@ namespace WebAPI
 
             services.AddScoped<IAuthService, AuthManager>();
             services.AddScoped<ITokenHelper, JwtHelper>();
-            services.AddScoped<IEmailSendHelper, EmailSendHelper>();
 
             //Token Options:
             var tokenOptions = Configuration.GetSection(key: "TokenOptions").Get<TokenOptions>();

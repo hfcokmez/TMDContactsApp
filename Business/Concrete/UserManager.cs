@@ -13,15 +13,15 @@ namespace Business.Concrete
 {
     public class UserManager : IUserService
     {
-        private IUserDal _userDal;
-        public UserManager(IUserDal userDal)
+        private readonly IUnitOfWork _unitOfWork;
+        public UserManager(IUnitOfWork unitOfWork)
         {
-            _userDal = userDal;
+            _unitOfWork = unitOfWork;
         }
 
         public IResult Add(User user)
         {
-            if (_userDal.Add(user, "AddUser"))
+            if (_unitOfWork.Users.Add(user, "AddUser"))
             {
                 return new SuccessResult(Messages.UserAddSuccess);
             }
@@ -30,7 +30,7 @@ namespace Business.Concrete
 
         public IResult Delete(int user)
         {
-            if (_userDal.Delete(user, "DeleteUser"))
+            if (_unitOfWork.Users.Delete(user, "DeleteUser"))
             {
                 return new SuccessResult(Messages.UserDeleteSuccess);
             }
@@ -39,7 +39,7 @@ namespace Business.Concrete
 
         public IResult Delete(List<int> users)
         {
-            if (_userDal.Delete(users, "DeleteUser"))
+            if (_unitOfWork.Users.Delete(users, "DeleteUser"))
             {
                 return new SuccessResult(Messages.UsersDeleteSuccess);
             }
@@ -48,7 +48,7 @@ namespace Business.Concrete
 
         public IDataResult<User> GetByEmail(string email)
         {
-            var user = _userDal.Get(email, "Email", "GetUserByEmail");
+            var user = _unitOfWork.Users.Get(email, "Email", "GetUserByEmail");
             if(user != null)
             {
                 return new SuccessDataResult<User>(user);
@@ -58,7 +58,7 @@ namespace Business.Concrete
 
         public IDataResult<User> GetById(int userId)
         {
-            var user = _userDal.Get(userId, "GetUser");
+            var user = _unitOfWork.Users.Get(userId, "GetUser");
             if(user != null)
             {
                 return new SuccessDataResult<User>(user);
@@ -68,7 +68,7 @@ namespace Business.Concrete
 
         public IDataResult<User> GetByTel(string tel)
         {
-            var user = _userDal.Get(tel, "Tel", "GetUserByTel");
+            var user = _unitOfWork.Users.Get(tel, "Tel", "GetUserByTel");
             if (user != null)
             {
                 return new SuccessDataResult<User>(user, Messages.UserTelAlreadyExist);
@@ -80,7 +80,7 @@ namespace Business.Concrete
         {
             try
             {
-                var userList = _userDal.GetList("GetAllUsers").ToList();
+                var userList = _unitOfWork.Users.GetList("GetAllUsers").ToList();
                 return new SuccessDataResult<List<User>>(userList);
             }
             catch (ArgumentNullException)
@@ -100,7 +100,7 @@ namespace Business.Concrete
             if (!result.Success) return result;
             user.PasswordHash = null;
             user.PasswordSalt = null;
-            if (_userDal.Update(user, "UpdateUser")) return new SuccessResult(Messages.UserUpdateSuccess);
+            if (_unitOfWork.Users.Update(user, "UpdateUser")) return new SuccessResult(Messages.UserUpdateSuccess);
             return new ErrorResult(Messages.UserUpdateFail);
         }
     }

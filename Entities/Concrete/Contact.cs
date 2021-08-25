@@ -1,13 +1,12 @@
-﻿using Core.Entities;
+﻿using Core.Entities.Abstract;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Entities.Concrete
 {
-    public class Contact: IEntity
+    public class Contact: EntityBase, IEntity
     {
-        public int Id { get; set; }
         public int UserId { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }

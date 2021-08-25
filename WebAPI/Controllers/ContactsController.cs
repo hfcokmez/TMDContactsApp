@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     [Authorize]
     public class ContactsController : ControllerBase

@@ -12,12 +12,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class AuthsController : ControllerBase
     {
         private IAuthService _authService;
-
         public AuthsController(IAuthService authService)
         {
             _authService = authService;

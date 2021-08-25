@@ -1,4 +1,5 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
 using Core.Entities.Concrete;
 using Core.Entities.Services;
 using Core.Utilities.Contents;
@@ -13,14 +14,14 @@ namespace Business.Concrete
 {
     public class AuthManager : IAuthService
     {
-        private IUserService _userService;
-        private ITokenHelper _tokenHelper;
-        private readonly IEmailSendHelper _emailSendHelper;
-        public AuthManager(IUserService userService, ITokenHelper tokenHelper, IEmailSendHelper emailSendHelper)
+        private readonly IUserService _userService;
+        private readonly ITokenHelper _tokenHelper;
+        private readonly IMapper _mapper;
+        public AuthManager(IUserService userService, ITokenHelper tokenHelper, IMapper mapper)
         {
             _userService = userService;
             _tokenHelper = tokenHelper;
-            _emailSendHelper = emailSendHelper;
+            _mapper = mapper;
         }
 
         public IDataResult<AccessToken> CreateAccessToken(User user)
@@ -51,24 +52,9 @@ namespace Business.Concrete
             if (emailExists.Success) return new ErrorDataResult<User>(emailExists.Message);
             else if (telExist.Success) return new ErrorDataResult<User>(telExist.Message); 
             HashingHelper.CreatePasswordHash(userRegisterDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
-            User user = new User
-            {
-                Email = userRegisterDto.Email,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
-                Name = userRegisterDto.Name,
-                Surname = userRegisterDto.Surname,
-                Status = true,
-                Tel = userRegisterDto.Tel,
-                TelBusiness = userRegisterDto.TelBusiness,
-                TelHome = userRegisterDto.TelHome,
-                Address = userRegisterDto.Address,
-                Photo = userRegisterDto.Photo,
-                Company = userRegisterDto.Company,
-                Title = userRegisterDto.Title,
-                BirthDate = userRegisterDto.BirthDate,
-                Note = userRegisterDto.Note,
-            };
+            User user = _mapper.Map<User>(userRegisterDto);
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
             var result = _userService.Add(user);
             if (result.Success) return new SuccessDataResult<User>(user, Messages.UserRegistered);
             else return new ErrorDataResult<User>(Messages.UserAddFail);
@@ -86,7 +72,7 @@ namespace Business.Concrete
             //silinecek
             return new SuccessDataResult<int>(randomNumber);
 
-            //if (_emailSendHelper.SendEmailWithContext(email, "<h1>Hello World!</h1>", randomNumber.ToString()))
+            //if (EmailSendHelper.SendEmailWithContext(email, "<h1>Hello World!</h1>", randomNumber.ToString()))
             //{
             //    return new SuccessDataResult<int>(randomNumber);
             //}

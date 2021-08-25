@@ -13,13 +13,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     [Authorize]
     public class UsersController : ControllerBase
     {
         private IUserService _userService;
-
         public UsersController(IUserService userService)
         {
             _userService = userService;

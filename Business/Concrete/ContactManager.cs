@@ -1,4 +1,5 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
 using Core.Entities.Concrete;
 using Core.Utilities.Contents;
 using Core.Utilities.Results;
@@ -14,20 +15,18 @@ namespace Business.Concrete
 {
     public class ContactManager : IContactService
     {
-        private IContactDal _contactDal;
-        private IGroupDal _groupDal;
-        private IUserService _userService;
-        public ContactManager(IContactDal contactDal, IGroupDal groupDal, IUserService userService)
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IUserService _userService;
+        public ContactManager(IUnitOfWork unitOfWork, IUserService userService, IMapper mapper)
         {
-            _contactDal = contactDal;
-            _groupDal = groupDal;
+            _unitOfWork = unitOfWork;
             _userService = userService;
         }
 
         public IResult Add(Contact contact)
         {
             if (IsUserInContactsList(contact.UserId, contact.Tel).Success) return new ErrorResult(Messages.ContactAlreadyExist);
-            if (_contactDal.Add(contact, "AddContact"))
+            if (_unitOfWork.Contacts.Add(contact, "AddContact"))
             {
                 return new SuccessResult(Messages.ContactAddSuccess);
             }
@@ -36,7 +35,7 @@ namespace Business.Concrete
 
         public IResult Delete(int contact)
         {
-            if (_contactDal.Delete(contact, "DeleteContact"))
+            if (_unitOfWork.Contacts.Delete(contact, "DeleteContact"))
             {
                 return new SuccessResult(Messages.ContactDeleteSuccess);
             }
@@ -45,7 +44,7 @@ namespace Business.Concrete
 
         public IResult Delete(List<int> contacts)
         {
-            if (_contactDal.Delete(contacts, "DeleteContact"))
+            if (_unitOfWork.Contacts.Delete(contacts, "DeleteContact"))
             {
                 return new SuccessResult(Messages.ContactsDeleteSuccess);
             }
@@ -54,7 +53,7 @@ namespace Business.Concrete
 
         public IDataResult<Contact> GetById(int contactId)
         {
-            var contact = _contactDal.Get(contactId, "GetContact");
+            var contact = _unitOfWork.Contacts.Get(contactId, "GetContact");
             if (contact != null)
             {
                 return new SuccessDataResult<Contact>(contact);
@@ -66,7 +65,7 @@ namespace Business.Concrete
         {
             try
             {
-                var contactList = _contactDal.GetList("GetAllContacts").ToList();
+                var contactList = _unitOfWork.Contacts.GetList("GetAllContacts").ToList();
                 return new SuccessDataResult<List<Contact>>(contactList);
             }
             catch (ArgumentNullException)
@@ -77,10 +76,10 @@ namespace Business.Concrete
 
         public IDataResult<PaginationDto<Contact>> GetListByUserId(int userId, int pageNumber, int pageSize)
         {
-            var contactCount = _contactDal.GetCount(new { UserId = userId }, "Count", "GetContactCountByUserId");
+            var contactCount = _unitOfWork.Contacts.GetCount(new { UserId = userId }, "Count", "GetContactCountByUserId");
             if (contactCount > 0)
             {
-                var contactList = _contactDal.GetList(new { UserId = userId, PageNumber = pageNumber, PageSize = pageSize },
+                var contactList = _unitOfWork.Contacts.GetList(new { UserId = userId, PageNumber = pageNumber, PageSize = pageSize },
                     "GetContactsByUserIdPagination").ToList();
                 var result = new PaginationDto<Contact>
                 {
@@ -103,7 +102,7 @@ namespace Business.Concrete
         {
             try
             {
-                var contactList = _contactDal.GetList(new { @UserId = userId }, "GetContactsByUserId").ToList();
+                var contactList = _unitOfWork.Contacts.GetList(new { @UserId = userId }, "GetContactsByUserId").ToList();
                 return new SuccessDataResult<List<Contact>>(contactList);
             }
             catch (ArgumentNullException)
@@ -116,7 +115,7 @@ namespace Business.Concrete
         {
             try
             {
-                var contactGroupList = _groupDal.GetList(contactId, "ContactId", "GetGroupsOfAContact").ToList();
+                var contactGroupList = _unitOfWork.Groups.GetList(contactId, "ContactId", "GetGroupsOfAContact").ToList();
                 return new SuccessDataResult<List<Group>>(contactGroupList);
             }
             catch (ArgumentNullException)
@@ -127,7 +126,7 @@ namespace Business.Concrete
 
         public IResult Update(Contact contact)
         {
-            if (_contactDal.Update(contact, "UpdateContact"))
+            if (_unitOfWork.Contacts.Update(contact, "UpdateContact"))
             {
                 return new SuccessResult(Messages.ContactUpdateSuccess);
             }
@@ -136,7 +135,7 @@ namespace Business.Concrete
 
         public IDataResult<Contact> IsUserInContactsList(int userId, string tel)
         {
-            var contact = _contactDal.Get(new { @Id = userId, @Tel = tel }, "IsUserInContactsList");
+            var contact = _unitOfWork.Contacts.Get(new { @Id = userId, @Tel = tel }, "IsUserInContactsList");
             if (contact != null)
             {
                 return new SuccessDataResult<Contact>(contact);

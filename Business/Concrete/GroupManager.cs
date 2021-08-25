@@ -13,17 +13,17 @@ namespace Business.Concrete
 {
     public class GroupManager: IGroupService
     {
-        private IGroupDal _groupDal;
-        public GroupManager(IGroupDal groupDal)
+        private readonly IUnitOfWork _unitOfWork;
+        public GroupManager(IUnitOfWork unitOfWork)
         {
-            _groupDal = groupDal;
+            _unitOfWork = unitOfWork;
         }
 
         public IResult Add(Group group)
         {
             var dto = new { UserId = group.UserId, Name = group.Name };
-            if (_groupDal.Get(dto, "IsGroupInUsersList") != null) return new ErrorResult(Messages.GroupAlreadyExists);
-            if (_groupDal.Add(group, "AddGroup"))
+            if (_unitOfWork.Groups.Get(dto, "IsGroupInUsersList") != null) return new ErrorResult(Messages.GroupAlreadyExists);
+            if (_unitOfWork.Groups.Add(group, "AddGroup"))
             {
                 return new SuccessResult(Messages.GroupAddSuccess);
             }
@@ -32,7 +32,7 @@ namespace Business.Concrete
 
         public IResult Delete(int group)
         {
-            if (_groupDal.Delete(group, "DeleteGroup"))
+            if (_unitOfWork.Groups.Delete(group, "DeleteGroup"))
             {
                 return new SuccessResult(Messages.GroupDeleteSuccess);
             }
@@ -41,7 +41,7 @@ namespace Business.Concrete
 
         public IResult Delete(List<int> groups)
         {
-            if (_groupDal.Delete(groups, "DeleteGroup"))
+            if (_unitOfWork.Groups.Delete(groups, "DeleteGroup"))
             {
                 return new SuccessResult(Messages.GroupsDeleteSuccess);
             }
@@ -50,7 +50,7 @@ namespace Business.Concrete
 
         public IDataResult<Group> GetById(int groupId)
         {
-            var group = _groupDal.Get(groupId, "GetGroup");
+            var group = _unitOfWork.Groups.Get(groupId, "GetGroup");
             if (group != null)
             {
                 return new SuccessDataResult<Group>(group);
@@ -62,7 +62,7 @@ namespace Business.Concrete
         {
             try
             {
-                var groupList = _groupDal.GetList("GetAllGroups").ToList();
+                var groupList = _unitOfWork.Groups.GetList("GetAllGroups").ToList();
                 return new SuccessDataResult<List<Group>>(groupList);
             }
             catch (ArgumentNullException)
@@ -75,7 +75,7 @@ namespace Business.Concrete
         {
             try
             {
-                var groupList = _groupDal.GetList(userId, "UserId", "GetGroupsByUserId").ToList();
+                var groupList = _unitOfWork.Groups.GetList(userId, "UserId", "GetGroupsByUserId").ToList();
                 return new SuccessDataResult<List<Group>>(groupList);
             }
             catch (ArgumentNullException)
@@ -86,7 +86,7 @@ namespace Business.Concrete
 
         public IResult Update(Group group)
         {
-            if (_groupDal.Update(group, "UpdateGroup"))
+            if (_unitOfWork.Groups.Update(group, "UpdateGroup"))
             {
                 return new SuccessResult(Messages.GroupUpdateSuccess);
             }

@@ -12,21 +12,17 @@ namespace Business.Concrete
 {
     public class GroupContactManager: IGroupContactService
     {
-        private IGroupContactDal _groupContactDal;
-        private IGroupDal _groupDal;
-        private IContactDal _contactDal;
-        public GroupContactManager(IGroupContactDal groupContactDal, IGroupDal groupDal, IContactDal contactDal)
+        private readonly IUnitOfWork _unitOfWork;
+        public GroupContactManager(IUnitOfWork unitOfWork)
         {
-            _groupContactDal = groupContactDal;
-            _groupDal = groupDal;
-            _contactDal = contactDal;
+            _unitOfWork = unitOfWork;
         }
 
         public IResult Add(GroupContact groupContact)
         {
             var dto = new { GroupId = groupContact.GroupId, ContactId = groupContact.ContactId };
-            if (_groupContactDal.GetList(dto, "GetGroupContact") != null) return new ErrorResult(Messages.ContactAlreadyExistInGroup);
-            if (_groupContactDal.Add(groupContact, "AddGroupContact"))
+            if (_unitOfWork.GroupsContacts.GetList(dto, "GetGroupContact") != null) return new ErrorResult(Messages.ContactAlreadyExistInGroup);
+            if (_unitOfWork.GroupsContacts.Add(groupContact, "AddGroupContact"))
             {
                 return new SuccessResult(Messages.GroupContactAddSuccess);
             }
@@ -35,7 +31,7 @@ namespace Business.Concrete
 
         public IResult Delete(GroupContact groupContact)
         {
-            if (_groupContactDal.Delete(groupContact, "DeleteGroupContact"))
+            if (_unitOfWork.GroupsContacts.Delete(groupContact, "DeleteGroupContact"))
             {
                 return new SuccessResult(Messages.GroupContactDeleteSuccess);
             }
@@ -46,7 +42,7 @@ namespace Business.Concrete
         {
             try
             {
-                var contactGroupList = _groupDal.GetList(contactId, "ContactId", "GetGroupsOfAContact").ToList();
+                var contactGroupList = _unitOfWork.Groups.GetList(contactId, "ContactId", "GetGroupsOfAContact").ToList();
                 return new SuccessDataResult<List<Group>>(contactGroupList);
             }
             catch (ArgumentNullException)
@@ -59,7 +55,7 @@ namespace Business.Concrete
         {
             try
             {
-                var groupContactList = _contactDal.GetList(groupId, "GroupId", "GetContactsOfAGroup").ToList();
+                var groupContactList = _unitOfWork.Contacts.GetList(groupId, "GroupId", "GetContactsOfAGroup").ToList();
                 return new SuccessDataResult<List<Contact>>(groupContactList);
             }
             catch (ArgumentNullException)
@@ -73,7 +69,7 @@ namespace Business.Concrete
             var groupDto = new { GroupId = groupId, PageNumber = pageNumber, PageSize = pageSize};
             try
             {
-                var groupContactList = _contactDal.GetList(groupDto, "GetContactsOfAGroupPagination").ToList();
+                var groupContactList = _unitOfWork.Contacts.GetList(groupDto, "GetContactsOfAGroupPagination").ToList();
                 return new SuccessDataResult<List<Contact>>(groupContactList);
             }
             catch (ArgumentNullException)

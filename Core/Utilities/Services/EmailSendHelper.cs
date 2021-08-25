@@ -6,9 +6,9 @@ using System.Text;
 
 namespace Core.Entities.Services
 {
-    public class EmailSendHelper : IEmailSendHelper
+    public class EmailSendHelper
     {
-        public bool SendEmailWithContext(string email, string htmlBody, string textBody)
+        public static bool SendEmailWithContext(string email, string htmlBody, string textBody)
         {
             try
             {

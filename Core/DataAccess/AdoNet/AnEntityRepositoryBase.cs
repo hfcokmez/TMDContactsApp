@@ -1,4 +1,4 @@
-﻿using Core.Entities;
+﻿using Core.Entities.Abstract;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -137,14 +137,9 @@ namespace Core.DataAccess.AdoNet
                         command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.AddWithValue($"@{field}", parameter);
                         SqlDataReader dataReader = command.ExecuteReader();
-                        if (dataReader.HasRows)
-                        {
-                            dataReader.Read();
-                        }
-                        else
-                        {
-                            return null;
-                        }
+                        if (dataReader.HasRows)   dataReader.Read();
+                        else   return null;
+                       
                         var Entity = new TEntity();
                         object boxedObject = RuntimeHelpers.GetObjectValue(Entity);
 
@@ -275,9 +270,9 @@ namespace Core.DataAccess.AdoNet
                         else return false;
                     }
                 }
-                catch (Exception exeption)
+                catch (Exception exception)
                 {
-                    var ex = exeption;
+                    var ex = exception;
                     connection.Close();
                     return false;
                 }

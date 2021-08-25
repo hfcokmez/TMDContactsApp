@@ -11,13 +11,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     [Authorize]
     public class GroupsController : ControllerBase
     {
         private IGroupService _groupService;
-
         public GroupsController(IGroupService groupService)
         {
             _groupService = groupService;
