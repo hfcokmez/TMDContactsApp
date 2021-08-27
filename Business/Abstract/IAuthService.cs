@@ -5,17 +5,18 @@ using Entities.Dto;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Business.Abstract
 {
     public interface IAuthService
     {
-        IDataResult<User> Register(UserRegisterDto userRegisterDto);
-        IDataResult<User> Login(UserLoginDto userLoginDto);
-        IDataResult<User> UserExists(string email);
+        Task<IDataResult<User>> Register(UserRegisterDto userRegisterDto);
+        Task<IDataResult<User>> Login(UserLoginDto userLoginDto);
+        Task<IDataResult<User>> UserExists(string email);
         IDataResult<AccessToken> CreateAccessToken(User user);
-        IResult ResetPassword(UserLoginDto userLoginDto);
-        IResult ResetPassword(UserLoginDto userLoginDto, string currentPassword);
-        IDataResult<int> Verification(string email);
+        Task<IResult> ResetPassword(UserLoginDto userLoginDto);
+        Task<IResult> ResetPassword(UserLoginDto userLoginDto, string currentPassword);
+        Task<IDataResult<int>> Verification(string email);
     }
 }

@@ -10,6 +10,7 @@ using Entities.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
@@ -23,19 +24,20 @@ namespace Business.Concrete
             _userService = userService;
         }
 
-        public IResult Add(Contact contact)
+        public async Task<IResult> Add(Contact contact)
         {
-            if (IsUserInContactsList(contact.UserId, contact.Tel).Success) return new ErrorResult(Messages.ContactAlreadyExist);
-            if (_unitOfWork.Contacts.Add(contact, "AddContact"))
+            var isUserInContactsList = await IsUserInContactsList(contact.UserId, contact.Tel);
+            if (isUserInContactsList.Success) return new ErrorResult(Messages.ContactAlreadyExist);
+            if (await _unitOfWork.Contacts.Add(contact, "AddContact"))
             {
                 return new SuccessResult(Messages.ContactAddSuccess);
             }
             return new ErrorResult(Messages.ContactAddFail);
         }
 
-        public IResult Delete(int contact)
+        public async Task<IResult> Delete(int contact)
         {
-            if (_unitOfWork.Contacts.Delete(contact, "DeleteContact"))
+            if (await _unitOfWork.Contacts.Delete(contact, "DeleteContact"))
             {
                 return new SuccessResult(Messages.ContactDeleteSuccess);
             }
@@ -51,9 +53,10 @@ namespace Business.Concrete
             return new ErrorResult(Messages.ContactDeleteFail);
         }
 
-        public IDataResult<Contact> GetById(int contactId)
+        public async Task<IDataResult<Contact>> GetById(int contactId)
         {
-            var contact = _unitOfWork.Contacts.Get(contactId, "GetContact");
+
+            var contact = await _unitOfWork.Contacts.Get(new { @Id = contactId }, "GetContact");
             if (contact != null)
             {
                 return new SuccessDataResult<Contact>(contact);
@@ -61,12 +64,12 @@ namespace Business.Concrete
             return new ErrorDataResult<Contact>(Messages.ContactGetFail);
         }
 
-        public IDataResult<List<Contact>> GetList()
+        public async Task<IDataResult<List<Contact>>> GetList()
         {
             try
             {
-                var contactList = _unitOfWork.Contacts.GetList("GetAllContacts").ToList();
-                return new SuccessDataResult<List<Contact>>(contactList);
+                var contactList = await _unitOfWork.Contacts.GetList("GetAllContacts");
+                return new SuccessDataResult<List<Contact>>(contactList.ToList());
             }
             catch (ArgumentNullException)
             {
@@ -74,16 +77,16 @@ namespace Business.Concrete
             }
         }
 
-        public IDataResult<PaginationDto<Contact>> GetListByUserId(int userId, int pageNumber, int pageSize)
+        public async Task<IDataResult<PaginationDto<Contact>>> GetListByUserId(int userId, int pageNumber, int pageSize)
         {
             var contactCount = _unitOfWork.Contacts.GetCount(new { UserId = userId }, "Count", "GetContactCountByUserId");
             if (contactCount > 0)
             {
-                var contactList = _unitOfWork.Contacts.GetList(new { UserId = userId, PageNumber = pageNumber, PageSize = pageSize },
-                    "GetContactsByUserIdPagination").ToList();
+                var contactList = await _unitOfWork.Contacts.GetList(new { UserId = userId, PageNumber = pageNumber, PageSize = pageSize },
+                    "GetContactsByUserIdPagination");
                 var result = new PaginationDto<Contact>
                 {
-                    Data = contactList,
+                    Data = contactList.ToList(),
                     CurrentPage = pageNumber,
                     LastPage = contactCount / pageSize,
                     PageSize = pageSize,
@@ -98,12 +101,12 @@ namespace Business.Concrete
                 return new ErrorDataResult<PaginationDto<Contact>>(Messages.ContactGetListFail);
         }
 
-        public IDataResult<List<Contact>> GetListByUserId(int userId)
+        public async Task<IDataResult<List<Contact>>> GetListByUserId(int userId)
         {
             try
             {
-                var contactList = _unitOfWork.Contacts.GetList(new { @UserId = userId }, "GetContactsByUserId").ToList();
-                return new SuccessDataResult<List<Contact>>(contactList);
+                var contactList = await _unitOfWork.Contacts.GetList(new { @UserId = userId }, "GetContactsByUserId");
+                return new SuccessDataResult<List<Contact>>(contactList.ToList());
             }
             catch (ArgumentNullException)
             {
@@ -111,12 +114,13 @@ namespace Business.Concrete
             }
         }
 
-        public IDataResult<List<Group>> GetListByContactId(int contactId)
+        public async Task<IDataResult<List<Group>>> GetListByContactId(int contactId)
         {
             try
             {
-                var contactGroupList = _unitOfWork.Groups.GetList(contactId, "ContactId", "GetGroupsOfAContact").ToList();
-                return new SuccessDataResult<List<Group>>(contactGroupList);
+                var contact = new { ContactId = contactId };
+                var contactGroupList = await _unitOfWork.Groups.GetList(contact, "GetGroupsOfAContact");
+                return new SuccessDataResult<List<Group>>(contactGroupList.ToList());
             }
             catch (ArgumentNullException)
             {
@@ -124,18 +128,18 @@ namespace Business.Concrete
             }
         }
 
-        public IResult Update(Contact contact)
+        public async Task<IResult> Update(Contact contact)
         {
-            if (_unitOfWork.Contacts.Update(contact, "UpdateContact"))
+            if (await _unitOfWork.Contacts.Update(contact, "UpdateContact"))
             {
                 return new SuccessResult(Messages.ContactUpdateSuccess);
             }
             return new ErrorResult(Messages.ContactUpdateFail);
         }
 
-        public IDataResult<Contact> IsUserInContactsList(int userId, string tel)
+        public async Task<IDataResult<Contact>> IsUserInContactsList(int userId, string tel)
         {
-            var contact = _unitOfWork.Contacts.Get(new { @Id = userId, @Tel = tel }, "IsUserInContactsList");
+            var contact = await _unitOfWork.Contacts.Get(new { @Id = userId, @Tel = tel }, "IsUserInContactsList");
             if (contact != null)
             {
                 return new SuccessDataResult<Contact>(contact);
@@ -143,22 +147,23 @@ namespace Business.Concrete
             return new ErrorDataResult<Contact>();
         }
 
-        public IResult AddWithSynch(Contact contact)
+        public async Task<IResult> AddWithSynch(Contact contact)
         {
-            var userCheck = _userService.GetByTel(contact.Tel);
+            var userCheck = await _userService.GetByTel(contact.Tel);
             if (userCheck.Success)
             {
-                var tel = _userService.GetById(contact.UserId).Data.Tel;
-                var userInContactList = IsUserInContactsList(userCheck.Data.Id, tel);
+                var task = await _userService.GetById(contact.UserId);
+                var tel = task.Data.Tel;
+                var userInContactList = await IsUserInContactsList(userCheck.Data.Id, tel);
                 if (userInContactList.Success)
                 {
                     var contactExist = ObjectBindHelper.ObjectToObject<User, Contact>(userCheck.Data, contact);
-                    var resultExist = Add(contactExist);
+                    var resultExist = await Add(contactExist);
                     if (resultExist.Success) return new SuccessResult(resultExist.Message);
                     else return new ErrorResult(resultExist.Message);
                 }
             }
-            var result = Add(contact);
+            var result = await Add(contact);
             if (result.Success) return new SuccessResult(result.Message);
             else return new ErrorResult(result.Message);
         }

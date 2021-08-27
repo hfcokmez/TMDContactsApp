@@ -4,17 +4,18 @@ using Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Business.Abstract
 {
     public interface IGroupService
     {
-        IDataResult<Group> GetById(int groupId);
-        IDataResult<List<Group>> GetList();
-        IDataResult<List<Group>> GetList(int userId);
-        IResult Add(Group group);
-        IResult Delete(int group);
+        Task<IDataResult<Group>> GetById(int groupId);
+        Task<IDataResult<List<Group>>> GetList();
+        Task<IDataResult<List<Group>>> GetList(int userId);
+        Task<IResult> Add(Group group);
+        Task<IResult> Delete(int group);
         IResult Delete(List<int> groups);
-        IResult Update(Group group);
+        Task<IResult> Update(Group group);
     }
 }

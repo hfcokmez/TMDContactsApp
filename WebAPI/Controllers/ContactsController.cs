@@ -5,12 +5,12 @@ using Entities.Concrete;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace WebAPI.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [Authorize]
     public class ContactsController : ControllerBase
     {
         private IContactService _contactService;
@@ -19,51 +19,51 @@ namespace WebAPI.Controllers
             _contactService = contactService;
         }
         [HttpGet(template: "GetAll")]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var result = _contactService.GetList();
+            var result = await _contactService.GetList();
             if (result.Success) return Ok(result.Data);
             else return BadRequest(result);
         }
         [HttpGet(template: "GetListByUserId")]
-        public IActionResult GetListByUserId(int userId)
+        public async Task<IActionResult> GetListByUserId(int userId)
         {
-            var result = _contactService.GetListByUserId(userId);
+            var result = await _contactService.GetListByUserId(userId);
             if (result.Success) return Ok(result.Data);
             else return BadRequest(result);   
         }
         [HttpGet(template: "GetListByUserIdPagination")]
-        public IActionResult GetListByUserIdPagination(int userId, int pageNumber, int pageSize)
+        public async Task<IActionResult> GetListByUserIdPagination(int userId, int pageNumber, int pageSize)
         {
-            var result = _contactService.GetListByUserId(userId, pageNumber, pageSize);
+            var result = await _contactService.GetListByUserId(userId, pageNumber, pageSize);
             if (result.Success) return Ok(result.Data);
             else return BadRequest(result);
         }
         [HttpGet(template: "Get")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            var result = _contactService.GetById(id);
+            var result = await _contactService.GetById(id);
             if (result.Success) return Ok(result.Data);
             else return BadRequest(result);       
         }
         [HttpPost (template: "Add")]
-        public IActionResult Add(Contact contact)
+        public async Task<IActionResult> Add(Contact contact)
         {
-            var result = _contactService.Add(contact);
+            var result = await _contactService.Add(contact);
             if (result.Success) return Ok(result);
             else return BadRequest(result);     
         }
         [HttpPost(template: "AddWithSynch")]
-        public IActionResult AddWithSynch(Contact contact)
+        public async Task<IActionResult> AddWithSynch(Contact contact)
         {
-            var result = _contactService.AddWithSynch(contact);
+            var result = await _contactService.AddWithSynch(contact);
             if (result.Success) return Ok(result);
             else return BadRequest(result);
         }
         [HttpPost(template: "Delete")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var result = _contactService.Delete(id);
+            var result = await _contactService.Delete(id);
             if (result.Success) return Ok(result);
             else return BadRequest(result);  
         }
@@ -75,9 +75,9 @@ namespace WebAPI.Controllers
             else return BadRequest(result);
         }
         [HttpPost(template: "Update")]
-        public IActionResult Update(Contact contact)
+        public async Task<IActionResult> Update(Contact contact)
         {
-            var result = _contactService.Update(contact);
+            var result = await _contactService.Update(contact);
             if (result.Success) return Ok(result);
             else return BadRequest(result);       
         }

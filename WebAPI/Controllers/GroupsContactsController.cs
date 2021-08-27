@@ -12,7 +12,6 @@ namespace WebAPI.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [Authorize]
     public class GroupsContactsController : ControllerBase
     {
         private IGroupContactService _groupContactService;
@@ -21,9 +20,9 @@ namespace WebAPI.Controllers
             _groupContactService = groupContactService;
         }
         [HttpPost(template: "Add")]
-        public IActionResult Add(GroupContact groupContact)
+        public async Task<IActionResult> Add(GroupContact groupContact)
         {
-            var result = _groupContactService.Add(groupContact);
+            var result = await _groupContactService.Add(groupContact);
             if (result.Success) return Ok(result);          
             else return BadRequest(result);        
         }
@@ -35,23 +34,23 @@ namespace WebAPI.Controllers
             else return BadRequest(result);
         }
         [HttpGet(template: "GetListByContactId")]
-        public IActionResult GetListByContactId(int contactId)
+        public async Task<IActionResult> GetListByContactId(int contactId)
         {
-            var result = _groupContactService.GetListByContactId(contactId);
+            var result = await _groupContactService.GetListByContactId(contactId);
             if (result.Success) return Ok(result.Data);       
             else return BadRequest(result);
         }
         [HttpGet(template: "GetListByGroupId")]
-        public IActionResult GetListByGroupId(int groupId)
+        public async Task<IActionResult> GetListByGroupId(int groupId)
         {
-            var result = _groupContactService.GetListByGroupId(groupId);
+            var result = await _groupContactService.GetListByGroupId(groupId);
             if (result.Success) return Ok(result.Data);  
             else return BadRequest(result);
         }
         [HttpGet(template: "GetListByGroupIdPagination")]
-        public IActionResult GetListByGroupIdPagination(int groupId, int pageNumber, int pageSize)
+        public async Task<IActionResult> GetListByGroupIdPagination(int groupId, int pageNumber, int pageSize)
         {
-            var result = _groupContactService.GetListByGroupId(groupId, pageNumber, pageSize);
+            var result = await _groupContactService.GetListByGroupId(groupId, pageNumber, pageSize);
             if (result.Success) return Ok(result.Data);
             else return BadRequest(result);
         }

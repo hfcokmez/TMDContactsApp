@@ -15,7 +15,6 @@ namespace WebAPI.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [Authorize]
     public class UsersController : ControllerBase
     {
         private IUserService _userService;
@@ -24,44 +23,44 @@ namespace WebAPI.Controllers
             _userService = userService;
         }
         [HttpPost(template: "Add")]
-        public IActionResult Add(User user)
+        public async Task<IActionResult> Add(User user)
         {
-            var result = _userService.Add(user);
+            var result = await _userService.Add(user);
             if (result.Success) return Ok(result);
             else return BadRequest(result);
         }
         [HttpPost(template: "Delete")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var result = _userService.Delete(id);
+            var result = await _userService.Delete(id);
             if (result.Success) return Ok(result);
             else return BadRequest(result);
         }
         [HttpPost(template: "Update")]
-        public IActionResult Update(User user)
+        public async Task<IActionResult> Update(User user)
         {
-            var result = _userService.Update(user);
+            var result = await _userService.Update(user);
             if (result.Success) return Ok(result);
             else return BadRequest(result);
         }
         [HttpGet(template: "Get")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            var result = _userService.GetById(id);
+            var result = await _userService.GetById(id);
             if (result.Success) return Ok(result.Data);
             else return BadRequest(result); 
         }
         [HttpGet(template: "GetByEmail")]
-        public IActionResult GetByEmail(string email)
+        public async Task<IActionResult> GetByEmail(string email)
         {
-            var result = _userService.GetByEmail(email);
+            var result = await _userService.GetByEmail(email);
             if (result.Success) return Ok(result.Data);    
             else return BadRequest(result);
         }
         [HttpGet(template: "GetAll")]
-        public IActionResult GetList()
+        public async Task<IActionResult> GetList()
         {
-            var result = _userService.GetList();
+            var result = await _userService.GetList();
             if (result.Success) return Ok(result.Data);
             else return BadRequest(result);         
         }

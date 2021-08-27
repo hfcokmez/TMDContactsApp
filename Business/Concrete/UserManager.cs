@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
@@ -19,18 +20,18 @@ namespace Business.Concrete
             _unitOfWork = unitOfWork;
         }
 
-        public IResult Add(User user)
+        public async Task<IResult> Add(User user)
         {
-            if (_unitOfWork.Users.Add(user, "AddUser"))
+            if (await _unitOfWork.Users.Add(user, "AddUser"))
             {
                 return new SuccessResult(Messages.UserAddSuccess);
             }
             return new ErrorResult(Messages.UserAddFail);
         }
 
-        public IResult Delete(int user)
+        public async Task<IResult> Delete(int user)
         {
-            if (_unitOfWork.Users.Delete(user, "DeleteUser"))
+            if (await _unitOfWork.Users.Delete(user, "DeleteUser"))
             {
                 return new SuccessResult(Messages.UserDeleteSuccess);
             }
@@ -46,9 +47,9 @@ namespace Business.Concrete
             return new ErrorResult(Messages.UserDeleteFail);
         }
 
-        public IDataResult<User> GetByEmail(string email)
+        public async Task<IDataResult<User>> GetByEmail(string email)
         {
-            var user = _unitOfWork.Users.Get(email, "Email", "GetUserByEmail");
+            var user = await _unitOfWork.Users.Get(new { @Email = email }, "GetUserByEmail");
             if(user != null)
             {
                 return new SuccessDataResult<User>(user);
@@ -56,9 +57,9 @@ namespace Business.Concrete
             return new ErrorDataResult<User>(Messages.UserNotFound);
         }
 
-        public IDataResult<User> GetById(int userId)
+        public async Task<IDataResult<User>> GetById(int userId)
         {
-            var user = _unitOfWork.Users.Get(userId, "GetUser");
+            var user = await _unitOfWork.Users.Get(new { @Id = userId }, "GetUser");
             if(user != null)
             {
                 return new SuccessDataResult<User>(user);
@@ -66,9 +67,9 @@ namespace Business.Concrete
             return new ErrorDataResult<User>(Messages.UserNotFound);
         }
 
-        public IDataResult<User> GetByTel(string tel)
+        public async Task<IDataResult<User>> GetByTel(string tel)
         {
-            var user = _unitOfWork.Users.Get(tel, "Tel", "GetUserByTel");
+            var user = await _unitOfWork.Users.Get(new { @Tel = tel }, "GetUserByTel");
             if (user != null)
             {
                 return new SuccessDataResult<User>(user, Messages.UserTelAlreadyExist);
@@ -76,12 +77,12 @@ namespace Business.Concrete
             return new ErrorDataResult<User>(Messages.UserNotFound);
         }
 
-        public IDataResult<List<User>> GetList()
+        public async Task<IDataResult<List<User>>> GetList()
         {
             try
             {
-                var userList = _unitOfWork.Users.GetList("GetAllUsers").ToList();
-                return new SuccessDataResult<List<User>>(userList);
+                var userList = await _unitOfWork.Users.GetList("GetAllUsers");
+                return new SuccessDataResult<List<User>>(userList.ToList());
             }
             catch (ArgumentNullException)
             {
@@ -94,13 +95,13 @@ namespace Business.Concrete
             return null;
         }
 
-        public IResult Update(User user)
+        public async Task<IResult> Update(User user)
         {
-            var result = GetById(user.Id);
+            var result = await GetById(user.Id);
             if (!result.Success) return result;
             user.PasswordHash = null;
             user.PasswordSalt = null;
-            if (_unitOfWork.Users.Update(user, "UpdateUser")) return new SuccessResult(Messages.UserUpdateSuccess);
+            if (await _unitOfWork.Users.Update(user, "UpdateUser")) return new SuccessResult(Messages.UserUpdateSuccess);
             return new ErrorResult(Messages.UserUpdateFail);
         }
     }

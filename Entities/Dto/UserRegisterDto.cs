@@ -33,7 +33,6 @@ namespace Entities.Dto
         [Required(ErrorMessage = "{0} cannot be empty.")]
         [MaxLength(30, ErrorMessage = "{0} cannot be more than {1} characters.")]
         [MinLength(2, ErrorMessage = "{0} cannot be less than {1}.")]
-        [RegularExpression("^((?!^Surname$)[a-zA-Z '])+$", ErrorMessage = "{0} is required and must be properly formatted.")]
         public string Surname { get; set; }
         [DisplayName("Phone Number Field")]
         [Required(ErrorMessage = "{0} cannot be empty.")]

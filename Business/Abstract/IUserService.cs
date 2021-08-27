@@ -4,19 +4,20 @@ using Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Business.Abstract
 {
     public interface IUserService
     {
-        IDataResult<List<User>> GetList();
-        IDataResult<User> GetById(int userId);
-        IDataResult<User> GetByEmail(string email);
-        IDataResult<User> GetByTel(string tel);
+        Task<IDataResult<List<User>>> GetList();
+        Task<IDataResult<User>> GetById(int userId);
+        Task<IDataResult<User>> GetByEmail(string email);
+        Task<IDataResult<User>> GetByTel(string tel);
         List<OperationClaim> GetUserOperationClaims(User user);
-        IResult Add(User user);
-        IResult Delete(int user);
+        Task<IResult> Add(User user);
+        Task<IResult> Delete(int user);
         IResult Delete(List<int> users);
-        IResult Update(User user);
+        Task<IResult> Update(User user);
     }
 }

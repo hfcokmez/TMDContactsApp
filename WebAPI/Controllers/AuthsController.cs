@@ -22,18 +22,18 @@ namespace WebAPI.Controllers
             _authService = authService;
         }
         [HttpPost(template: "Login")]
-        public IActionResult Login(UserLoginDto userLoginDto)
+        public async Task<IActionResult> Login(UserLoginDto userLoginDto)
         {
-            var userLogin = _authService.Login(userLoginDto);
+            var userLogin = await _authService.Login(userLoginDto);
             if (!userLogin.Success)return BadRequest(userLogin);
             var result = _authService.CreateAccessToken(userLogin.Data);
             if (result.Success)return Ok(result.Data);
             return BadRequest(result);
         }
         [HttpPost(template: "Register")]
-        public IActionResult Register(UserRegisterDto userRegisterDto)
+        public async Task<IActionResult> Register(UserRegisterDto userRegisterDto)
         {
-            var userRegister = _authService.Register(userRegisterDto);
+            var userRegister = await _authService.Register(userRegisterDto);
             if (!userRegister.Success)return BadRequest(userRegister);
             var result = _authService.CreateAccessToken(userRegister.Data);
             if (result.Success)return Ok(result.Data);
@@ -47,31 +47,31 @@ namespace WebAPI.Controllers
             return BadRequest(result);
         }
         [HttpGet(template: "Verification")]
-        public IActionResult Verification(string email)
+        public async Task<IActionResult> Verification(string email)
         {
-            var result = _authService.Verification(email);
+            var result = await _authService.Verification(email);
             if (result.Success)return Ok(result.Data);
             return BadRequest(result);
         }
         [HttpPost(template: "ForgotPassword")]
-        public IActionResult ForgotPassword(string email)
+        public async Task<IActionResult> ForgotPassword(string email)
         {
-            var result = _authService.Verification(email);
+            var result = await _authService.Verification(email);
             if (result.Success)return Ok(result.Data);
             return BadRequest(result);
         }
         [HttpPost(template: "ResetPassword")]
-        public IActionResult ResetPassword(UserLoginDto userLoginDto)
+        public async Task<IActionResult> ResetPassword(UserLoginDto userLoginDto)
         {
-            var result = _authService.ResetPassword(userLoginDto);
+            var result = await _authService.ResetPassword(userLoginDto);
             if (!result.Success)return BadRequest(result);
             return Ok(result);
         }
         [HttpPost(template: "ResetPasswordVerification")]
         [Authorize]
-        public IActionResult ResetPasswordVerification(UserLoginDto userLoginDto, string currentPassword)
+        public async Task<IActionResult> ResetPasswordVerification(UserLoginDto userLoginDto, string currentPassword)
         {
-            var result = _authService.ResetPassword(userLoginDto, currentPassword);
+            var result = await _authService.ResetPassword(userLoginDto, currentPassword);
             if (!result.Success)return BadRequest(result);
             return Ok(result);
         }

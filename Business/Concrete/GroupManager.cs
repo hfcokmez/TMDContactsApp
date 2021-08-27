@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
@@ -19,20 +20,19 @@ namespace Business.Concrete
             _unitOfWork = unitOfWork;
         }
 
-        public IResult Add(Group group)
+        public async Task<IResult> Add(Group group)
         {
-            var dto = new { UserId = group.UserId, Name = group.Name };
-            if (_unitOfWork.Groups.Get(dto, "IsGroupInUsersList") != null) return new ErrorResult(Messages.GroupAlreadyExists);
-            if (_unitOfWork.Groups.Add(group, "AddGroup"))
+            if (await _unitOfWork.Groups.Get(new { @UserId = group.UserId, @Name = group.Name }, "IsGroupInUsersList") != null) return new ErrorResult(Messages.GroupAlreadyExists);
+            if (await _unitOfWork.Groups.Add(group, "AddGroup"))
             {
                 return new SuccessResult(Messages.GroupAddSuccess);
             }
             return new ErrorResult(Messages.GroupAddFail);
         }
 
-        public IResult Delete(int group)
+        public async Task<IResult> Delete(int group)
         {
-            if (_unitOfWork.Groups.Delete(group, "DeleteGroup"))
+            if (await _unitOfWork.Groups.Delete(group, "DeleteGroup"))
             {
                 return new SuccessResult(Messages.GroupDeleteSuccess);
             }
@@ -48,9 +48,9 @@ namespace Business.Concrete
             return new ErrorResult(Messages.GroupDeleteFail);
         }
 
-        public IDataResult<Group> GetById(int groupId)
+        public async Task<IDataResult<Group>> GetById(int groupId)
         {
-            var group = _unitOfWork.Groups.Get(groupId, "GetGroup");
+            var group = await _unitOfWork.Groups.Get(new { @Id = groupId }, "GetGroup");
             if (group != null)
             {
                 return new SuccessDataResult<Group>(group);
@@ -58,12 +58,12 @@ namespace Business.Concrete
             return new ErrorDataResult<Group>(Messages.GroupGetFail);
         }
 
-        public IDataResult<List<Group>> GetList()
+        public async Task<IDataResult<List<Group>>> GetList()
         {
             try
             {
-                var groupList = _unitOfWork.Groups.GetList("GetAllGroups").ToList();
-                return new SuccessDataResult<List<Group>>(groupList);
+                var groupList = await _unitOfWork.Groups.GetList("GetAllGroups");
+                return new SuccessDataResult<List<Group>>(groupList.ToList());
             }
             catch (ArgumentNullException)
             {
@@ -71,12 +71,13 @@ namespace Business.Concrete
             }
         }
 
-        public IDataResult<List<Group>> GetList(int userId)
+        public async Task<IDataResult<List<Group>>> GetList(int userId)
         {
             try
             {
-                var groupList = _unitOfWork.Groups.GetList(userId, "UserId", "GetGroupsByUserId").ToList();
-                return new SuccessDataResult<List<Group>>(groupList);
+                var user = new { UserId = userId };
+                var groupList = await _unitOfWork.Groups.GetList(user, "GetGroupsByUserId");
+                return new SuccessDataResult<List<Group>>(groupList.ToList());
             }
             catch (ArgumentNullException)
             {
@@ -84,9 +85,9 @@ namespace Business.Concrete
             }
         }
 
-        public IResult Update(Group group)
+        public async Task<IResult> Update(Group group)
         {
-            if (_unitOfWork.Groups.Update(group, "UpdateGroup"))
+            if (await _unitOfWork.Groups.Update(group, "UpdateGroup"))
             {
                 return new SuccessResult(Messages.GroupUpdateSuccess);
             }

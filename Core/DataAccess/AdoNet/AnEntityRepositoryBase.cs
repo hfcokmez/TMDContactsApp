@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace Core.DataAccess.AdoNet
 {
@@ -13,14 +14,14 @@ namespace Core.DataAccess.AdoNet
     {
         protected readonly static string connectionString = @"Server=TESTWEBDB\TESTWEBDB02;Database=TMDContacts;User Id=db_testadmin;Password=sabahsoft;Trusted_Connection=False;MultipleActiveResultSets=true;";
 
-        public bool Add(TEntity entity, string sProcedure)
+        public async Task<bool> Add(TEntity entity, string sProcedure)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 DataSet dataset = new DataSet();
                 try
                 {
-                    connection.Open();
+                    await connection.OpenAsync();
                     using (var command = new SqlCommand(sProcedure, connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
@@ -34,7 +35,8 @@ namespace Core.DataAccess.AdoNet
                             }
                             else command.Parameters.AddWithValue($"@{property.Name}", DBNull.Value);
                         }
-                        new SqlDataAdapter(command).Fill(dataset);
+                        var dAdapter = new SqlDataAdapter(command);
+                        await Task.Run(() => dAdapter.Fill(dataset));
                     }
                     connection.Close();
                     return true;
@@ -47,14 +49,14 @@ namespace Core.DataAccess.AdoNet
             }
         }
 
-        public bool Update(TEntity entity, string sProcedure)
+        public async Task<bool> Update(TEntity entity, string sProcedure)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 DataSet dataset = new DataSet();
                 try
                 {
-                    connection.Open();
+                    await connection.OpenAsync();
                     using (var command = new SqlCommand(sProcedure, connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
@@ -71,12 +73,13 @@ namespace Core.DataAccess.AdoNet
                             }
                             else command.Parameters.AddWithValue($"@{property.Name}", DBNull.Value);
                         }
-                        var a = new SqlDataAdapter(command).Fill(dataset);
+                        var dAdapter = new SqlDataAdapter(command);
+                        await Task.Run(() => dAdapter.Fill(dataset));
                         connection.Close();
                         return true;
                     }
                 }
-                catch (Exception )
+                catch (Exception)
                 {
                     connection.Close();
                     return false;
@@ -84,119 +87,37 @@ namespace Core.DataAccess.AdoNet
             }
         }
 
-        public TEntity Get(int id, string sProcedure)
+        public async Task<IList<TEntity>> GetList(string sProcedure)
         {
+            var entityList = new List<TEntity>();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
                 {
-                    connection.Open();
                     using (var command = new SqlCommand(sProcedure, connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@Id", id);
-                        SqlDataReader dataReader = command.ExecuteReader();
-                        if (dataReader.HasRows)
+                        await connection.OpenAsync();
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
-                            dataReader.Read();
-                        }
-                        var Entity = new TEntity();
-                        object boxedObject = RuntimeHelpers.GetObjectValue(Entity);
-
-                        foreach (var property in Entity.GetType().GetProperties())
-                        {
-                            if (dataReader[property.Name] != DBNull.Value)
+                            if (!reader.HasRows)
+                                connection.Close();
+                            while (await reader.ReadAsync())
                             {
-                                property.SetValue(boxedObject, dataReader[property.Name]);
-                                continue;
-                            }
-                            property.SetValue(boxedObject, null);
-                        }
-                        Entity = (TEntity)boxedObject;
-                        connection.Close();
-                        return Entity;
-                    }
-                }
-                catch (Exception)
-                {
-                    connection.Close();
-                    return null;
-                }
-            }
-        }
-
-        public TEntity Get(string parameter, string field, string sProcedure)
-        {
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                try
-                {
-                    connection.Open();
-                    using (var command = new SqlCommand(sProcedure, connection))
-                    {
-                        command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue($"@{field}", parameter);
-                        SqlDataReader dataReader = command.ExecuteReader();
-                        if (dataReader.HasRows)   dataReader.Read();
-                        else   return null;
-                       
-                        var Entity = new TEntity();
-                        object boxedObject = RuntimeHelpers.GetObjectValue(Entity);
-
-                        foreach (var property in Entity.GetType().GetProperties())
-                        {
-                            if (dataReader[property.Name] != DBNull.Value)
-                            {
-                                property.SetValue(boxedObject, dataReader[property.Name]);
-                                continue;
-                            }
-                            property.SetValue(boxedObject, null);
-                        }
-                        Entity = (TEntity)boxedObject;
-                        connection.Close();
-                        return Entity;
-                    }
-                }
-                catch (Exception)
-                {
-                    connection.Close();
-                    return null;
-                }
-            }
-        }
-
-        public IList<TEntity> GetList(string sProcedure)
-        {
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                try
-                {
-                    connection.Open();
-                    using (var command = new SqlCommand(sProcedure, connection))
-                    {
-                        command.CommandType = CommandType.StoredProcedure;
-                        SqlDataReader dataReader = command.ExecuteReader();
-                        var entityList = new List<TEntity>();
-                        if (!dataReader.HasRows)
-                        {
-                            connection.Close();
-                            return null;
-                        }
-                        while (dataReader.Read())
-                        {
-                            var entity = new TEntity();
-                            object boxedObject = RuntimeHelpers.GetObjectValue(entity);
-                            foreach (var property in entity.GetType().GetProperties())
-                            {
-                                if (dataReader[property.Name] != DBNull.Value)
+                                var entity = new TEntity();
+                                object boxedObject = RuntimeHelpers.GetObjectValue(entity);
+                                foreach (var property in entity.GetType().GetProperties())
                                 {
-                                    property.SetValue(boxedObject, dataReader[property.Name]);
-                                    continue;
+                                    if (reader[property.Name] != DBNull.Value)
+                                    {
+                                        property.SetValue(boxedObject, reader[property.Name]);
+                                        continue;
+                                    }
+                                    property.SetValue(boxedObject, null);
                                 }
-                                property.SetValue(boxedObject, null);
+                                entity = (TEntity)boxedObject;
+                                entityList.Add(entity);
                             }
-                            entity = (TEntity)boxedObject;
-                            entityList.Add(entity);
                         }
                         connection.Close();
                         return entityList;
@@ -210,74 +131,34 @@ namespace Core.DataAccess.AdoNet
             }
         }
 
-        public IList<TEntity> GetList(int id, string field, string sProcedure)
+
+        public async Task<bool> Delete(int entity, string sProcedure)
         {
+           
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                try
+                await connection.OpenAsync();
+                using (var tran = connection.BeginTransaction())
+                using (var command = new SqlCommand(sProcedure, connection, tran))
                 {
-                    connection.Open();
-                    using (var command = new SqlCommand(sProcedure, connection))
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@Id", SqlDbType.Int);
+                    command.Parameters["@Id"].Value = (entity);
+                    try
                     {
-                        command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue($"@{field}", id);
-                        SqlDataReader dataReader = command.ExecuteReader();
-                        var entityList = new List<TEntity>();
-                        while (dataReader.Read())
-                        {
-                            var entity = new TEntity();
-                            object boxedObject = RuntimeHelpers.GetObjectValue(entity);
-                            foreach (var property in entity.GetType().GetProperties())
-                            {
-                                if (dataReader[property.Name] != DBNull.Value)
-                                {
-                                    property.SetValue(boxedObject, dataReader[property.Name]);
-                                    continue;
-                                }
-                                property.SetValue(boxedObject, null);
-                            }
-                            entity = (TEntity)boxedObject;
-                            entityList.Add(entity);
-                        }
-                        connection.Close();
-                        if (entityList.Any()) return entityList;
-                        return null;
+                        await command.ExecuteNonQueryAsync();
                     }
-                }
-                catch (Exception)
-                {
-                    connection.Close();
-                    return null;
+                    catch
+                    {
+                        tran.Rollback();
+                        return false;
+                    }
+                    tran.Commit();
+                    return true;
                 }
             }
         }
 
-        public bool Delete(int entity, string sProcedure)
-        {
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                try
-                {
-                    using (SqlCommand command = new SqlCommand(sProcedure, connection))
-                    {
-                        command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.Add("@Id", SqlDbType.Int);
-                        command.Parameters["@Id"].Value = (entity);
-                        connection.Open();
-                        var result = command.ExecuteNonQuery();
-                        connection.Close();
-                        if (result > 0) return true;
-                        else return false;
-                    }
-                }
-                catch (Exception exception)
-                {
-                    var ex = exception;
-                    connection.Close();
-                    return false;
-                }
-            }
-        }
         public bool Delete(IList<int> entityList, string sProcedure)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -316,13 +197,14 @@ namespace Core.DataAccess.AdoNet
             }
         }
 
-        public IList<TEntity> GetList(dynamic dto, string sProcedure)
+        public async Task<IList<TEntity>> GetList(dynamic dto, string sProcedure)
         {
+            var entityList = new List<TEntity>();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
                 {
-                    connection.Open();
+                    await connection.OpenAsync();
                     using (var command = new SqlCommand(sProcedure, connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
@@ -330,9 +212,8 @@ namespace Core.DataAccess.AdoNet
                         {
                             command.Parameters.AddWithValue($"@{property.Name}", property.GetValue(dto, null));
                         }
-                        SqlDataReader dataReader = command.ExecuteReader();
-                        var entityList = new List<TEntity>();
-                        while (dataReader.Read())
+                        SqlDataReader dataReader = await command.ExecuteReaderAsync();
+                        while (await dataReader.ReadAsync())
                         {
                             var entity = new TEntity();
                             object boxedObject = RuntimeHelpers.GetObjectValue(entity);
@@ -360,13 +241,13 @@ namespace Core.DataAccess.AdoNet
                 }
             }
         }
-        public TEntity Get(dynamic dto, string sProcedure)
+        public async Task<TEntity> Get(dynamic dto, string sProcedure)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
                 {
-                    connection.Open();
+                    await connection.OpenAsync();
                     using (var command = new SqlCommand(sProcedure, connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
@@ -374,10 +255,10 @@ namespace Core.DataAccess.AdoNet
                         {
                             command.Parameters.AddWithValue($"@{property.Name}", property.GetValue(dto, null));
                         }
-                        SqlDataReader dataReader = command.ExecuteReader();
+                        SqlDataReader dataReader = await command.ExecuteReaderAsync();
                         if (dataReader.HasRows)
                         {
-                            dataReader.Read();
+                            await dataReader.ReadAsync();
                         }
                         var Entity = new TEntity();
                         object boxedObject = RuntimeHelpers.GetObjectValue(Entity);
@@ -403,7 +284,7 @@ namespace Core.DataAccess.AdoNet
                 }
             }
         }
-
+        
         public int GetCount(dynamic dto, string propertyName, string sProcedure)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))

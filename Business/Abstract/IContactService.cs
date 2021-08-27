@@ -5,20 +5,21 @@ using Entities.Dto;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Business.Abstract
 {
     public interface IContactService
     {
-        IDataResult<Contact> GetById(int contactId);
-        IDataResult<List<Contact>> GetList();
-        IDataResult<PaginationDto<Contact>> GetListByUserId(int userId, int pageNumber, int pageSize);
-        IDataResult<List<Contact>> GetListByUserId(int userId);
-        IDataResult<Contact> IsUserInContactsList(int userId, string tel);
-        IResult Add(Contact contact);
-        IResult AddWithSynch(Contact contact);
-        IResult Delete(int contact);
+        Task<IDataResult<Contact>> GetById(int contactId);
+        Task<IDataResult<List<Contact>>> GetList();
+        Task<IDataResult<PaginationDto<Contact>>> GetListByUserId(int userId, int pageNumber, int pageSize);
+        Task<IDataResult<List<Contact>>> GetListByUserId(int userId);
+        Task<IDataResult<Contact>> IsUserInContactsList(int userId, string tel);
+        Task<IResult> Add(Contact contact);
+        Task<IResult> AddWithSynch(Contact contact);
+        Task<IResult> Delete(int contact);
         IResult Delete(List<int> contacts);
-        IResult Update(Contact contact);
+        Task<IResult> Update(Contact contact);
     }
 }
