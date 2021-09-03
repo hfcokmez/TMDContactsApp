@@ -19,32 +19,32 @@ namespace Business.Concrete
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IResult> Add(GroupContact groupContact)
+        public async Task<IResult> AddAsync(GroupContact groupContact)
         {
             var dto = new { GroupId = groupContact.GroupId, ContactId = groupContact.ContactId };
-            if (await _unitOfWork.GroupsContacts.GetList(dto, "GetGroupContact") != null) return new ErrorResult(Messages.ContactAlreadyExistInGroup);
-            if (await _unitOfWork.GroupsContacts.Add(groupContact, "AddGroupContact"))
+            if (await _unitOfWork.GroupsContacts.GetListAsync(dto, "GetGroupContact") != null) return new ErrorResult(Messages.ContactAlreadyExistInGroup);
+            if (await _unitOfWork.GroupsContacts.AddAsync(groupContact, "AddGroupContact"))
             {
                 return new SuccessResult(Messages.GroupContactAddSuccess);
             }
             return new ErrorResult(Messages.GroupContactAddFail);
         }
 
-        public IResult Delete(GroupContact groupContact)
+        public async Task<IResult> DeleteAsync(GroupContact groupContact)
         {
-            if (_unitOfWork.GroupsContacts.Delete(groupContact, "DeleteGroupContact"))
+            if (await _unitOfWork.GroupsContacts.DeleteAsync(new { @GroupId = groupContact.GroupId, @ContactId = groupContact.ContactId }, "DeleteGroupContact"))
             {
                 return new SuccessResult(Messages.GroupContactDeleteSuccess);
             }
             return new ErrorResult(Messages.GroupContactDeleteFail);
         }
 
-        public async Task<IDataResult<List<Group>>> GetListByContactId(int contactId)
+        public async Task<IDataResult<List<Group>>> GetListByContactIdAsync(int contactId)
         {
             try
             {
                 var contactDto = new { ContactId = contactId };
-                var contactGroupList = await _unitOfWork.Groups.GetList(contactDto, "GetGroupsOfAContact");
+                var contactGroupList = await _unitOfWork.Groups.GetListAsync(contactDto, "GetGroupsOfAContact");
                 return new SuccessDataResult<List<Group>>(contactGroupList.ToList());
             }
             catch (ArgumentNullException)
@@ -53,12 +53,12 @@ namespace Business.Concrete
             }
         }
 
-        public async Task<IDataResult<List<Contact>>> GetListByGroupId(int groupId)
+        public async Task<IDataResult<List<Contact>>> GetListByGroupIdAsync(int groupId)
         {
             try
             {
                 var group = new { GroupId = groupId };
-                var groupContactList = await _unitOfWork.Contacts.GetList(group, "GetContactsOfAGroup");
+                var groupContactList = await _unitOfWork.Contacts.GetListAsync(group, "GetContactsOfAGroup");
                 return new SuccessDataResult<List<Contact>>(groupContactList.ToList());
             }
             catch (ArgumentNullException)
@@ -67,12 +67,12 @@ namespace Business.Concrete
             }
         }
 
-        public async Task<IDataResult<List<Contact>>> GetListByGroupId(int groupId, int pageNumber, int pageSize)
+        public async Task<IDataResult<List<Contact>>> GetListByGroupIdAsync(int groupId, int pageNumber, int pageSize)
         {
             var groupDto = new { GroupId = groupId, PageNumber = pageNumber, PageSize = pageSize};
             try
             {
-                var groupContactList = await _unitOfWork.Contacts.GetList(groupDto, "GetContactsOfAGroupPagination");
+                var groupContactList = await _unitOfWork.Contacts.GetListAsync(groupDto, "GetContactsOfAGroupPagination");
                 return new SuccessDataResult<List<Contact>>(groupContactList.ToList());
             }
             catch (ArgumentNullException)

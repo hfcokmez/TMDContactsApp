@@ -20,36 +20,36 @@ namespace Business.Concrete
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IResult> Add(User user)
+        public async Task<IResult> AddAsync(User user)
         {
-            if (await _unitOfWork.Users.Add(user, "AddUser"))
+            if (await _unitOfWork.Users.AddAsync(user, "AddUser"))
             {
                 return new SuccessResult(Messages.UserAddSuccess);
             }
             return new ErrorResult(Messages.UserAddFail);
         }
 
-        public async Task<IResult> Delete(int user)
+        public async Task<IResult> DeleteAsync(int user)
         {
-            if (await _unitOfWork.Users.Delete(user, "DeleteUser"))
+            if (await _unitOfWork.Users.DeleteAsync(user, "DeleteUser"))
             {
                 return new SuccessResult(Messages.UserDeleteSuccess);
             }
             return new ErrorResult(Messages.UserDeleteFail);
         }
 
-        public IResult Delete(List<int> users)
+        public async Task<IResult> DeleteListAsync(List<int> users)
         {
-            if (_unitOfWork.Users.Delete(users, "DeleteUser"))
+            if (await _unitOfWork.Users.DeleteListAsync(users, "DeleteUser"))
             {
                 return new SuccessResult(Messages.UsersDeleteSuccess);
             }
             return new ErrorResult(Messages.UserDeleteFail);
         }
 
-        public async Task<IDataResult<User>> GetByEmail(string email)
+        public async Task<IDataResult<User>> GetByEmailAsync(string email)
         {
-            var user = await _unitOfWork.Users.Get(new { @Email = email }, "GetUserByEmail");
+            var user = await _unitOfWork.Users.GetAsync(new { @Email = email }, "GetUserByEmail");
             if(user != null)
             {
                 return new SuccessDataResult<User>(user);
@@ -57,9 +57,9 @@ namespace Business.Concrete
             return new ErrorDataResult<User>(Messages.UserNotFound);
         }
 
-        public async Task<IDataResult<User>> GetById(int userId)
+        public async Task<IDataResult<User>> GetByIdAsync(int userId)
         {
-            var user = await _unitOfWork.Users.Get(new { @Id = userId }, "GetUser");
+            var user = await _unitOfWork.Users.GetAsync(new { @Id = userId }, "GetUser");
             if(user != null)
             {
                 return new SuccessDataResult<User>(user);
@@ -67,9 +67,9 @@ namespace Business.Concrete
             return new ErrorDataResult<User>(Messages.UserNotFound);
         }
 
-        public async Task<IDataResult<User>> GetByTel(string tel)
+        public async Task<IDataResult<User>> GetByTelAsync(string tel)
         {
-            var user = await _unitOfWork.Users.Get(new { @Tel = tel }, "GetUserByTel");
+            var user = await _unitOfWork.Users.GetAsync(new { @Tel = tel }, "GetUserByTel");
             if (user != null)
             {
                 return new SuccessDataResult<User>(user, Messages.UserTelAlreadyExist);
@@ -77,11 +77,11 @@ namespace Business.Concrete
             return new ErrorDataResult<User>(Messages.UserNotFound);
         }
 
-        public async Task<IDataResult<List<User>>> GetList()
+        public async Task<IDataResult<List<User>>> GetListAsync()
         {
             try
             {
-                var userList = await _unitOfWork.Users.GetList("GetAllUsers");
+                var userList = await _unitOfWork.Users.GetListAsync("GetAllUsers");
                 return new SuccessDataResult<List<User>>(userList.ToList());
             }
             catch (ArgumentNullException)
@@ -95,13 +95,13 @@ namespace Business.Concrete
             return null;
         }
 
-        public async Task<IResult> Update(User user)
+        public async Task<IResult> UpdateAsync(User user)
         {
-            var result = await GetById(user.Id);
+            var result = await GetByIdAsync(user.Id);
             if (!result.Success) return result;
             user.PasswordHash = null;
             user.PasswordSalt = null;
-            if (await _unitOfWork.Users.Update(user, "UpdateUser")) return new SuccessResult(Messages.UserUpdateSuccess);
+            if (await _unitOfWork.Users.UpdateAsync(user, "UpdateUser")) return new SuccessResult(Messages.UserUpdateSuccess);
             return new ErrorResult(Messages.UserUpdateFail);
         }
     }

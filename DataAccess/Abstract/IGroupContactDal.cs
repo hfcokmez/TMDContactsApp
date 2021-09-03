@@ -6,8 +6,7 @@ using System.Text;
 
 namespace DataAccess.Abstract
 {
-    public interface IGroupContactDal: IEntityRepository<GroupContact>
+    public interface IGroupContactDal: IEntityRepositoryAsync<GroupContact>
     {
-        bool Delete(GroupContact groupContact, string sProcedure);
     }
 }

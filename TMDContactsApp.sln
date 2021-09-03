@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.902
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{EF87909F-4C31-42E7-85A6-62AADF27C9C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TMDContactsApp.DataAccess", "DataAccess\TMDContactsApp.DataAccess.csproj", "{EF87909F-4C31-42E7-85A6-62AADF27C9C5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{F3D948D1-6002-45A6-8629-D2C57F747DA6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TMDContactsApp.Core", "Core\TMDContactsApp.Core.csproj", "{F3D948D1-6002-45A6-8629-D2C57F747DA6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Business", "Business\Business.csproj", "{CE926164-91BF-4598-A4FA-ACBB18B9C75E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TMDContactsApp.Business", "Business\TMDContactsApp.Business.csproj", "{CE926164-91BF-4598-A4FA-ACBB18B9C75E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Entities", "Entities\Entities.csproj", "{50123FAE-43C4-4937-A775-2EE9E9A9749B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TMDContactsApp.Entities", "Entities\TMDContactsApp.Entities.csproj", "{50123FAE-43C4-4937-A775-2EE9E9A9749B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI", "WebAPI\WebAPI.csproj", "{979FE742-AD31-439C-A974-EEB4F17C0F68}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TMDContactsApp.WebAPI", "WebAPI\TMDContactsApp.WebAPI.csproj", "{979FE742-AD31-439C-A974-EEB4F17C0F68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

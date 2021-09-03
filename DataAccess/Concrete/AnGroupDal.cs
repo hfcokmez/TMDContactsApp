@@ -7,7 +7,7 @@ using System.Text;
 
 namespace DataAccess.Concrete
 {
-    public class AnGroupDal : AnEntityRepositoryBase<Group>, IGroupDal
+    public class AnGroupDal : AnEntityRepositoryBaseAsync<Group>, IGroupDal
     {
     }
 }

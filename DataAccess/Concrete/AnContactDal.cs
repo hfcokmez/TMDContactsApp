@@ -11,7 +11,7 @@ using System.Text;
 
 namespace DataAccess.Concrete
 {
-    public class AnContactDal: AnEntityRepositoryBase<Contact>, IContactDal
+    public class AnContactDal: AnEntityRepositoryBaseAsync<Contact>, IContactDal
     {
     }
 }

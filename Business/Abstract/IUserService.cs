@@ -10,14 +10,14 @@ namespace Business.Abstract
 {
     public interface IUserService
     {
-        Task<IDataResult<List<User>>> GetList();
-        Task<IDataResult<User>> GetById(int userId);
-        Task<IDataResult<User>> GetByEmail(string email);
-        Task<IDataResult<User>> GetByTel(string tel);
+        Task<IDataResult<List<User>>> GetListAsync();
+        Task<IDataResult<User>> GetByIdAsync(int userId);
+        Task<IDataResult<User>> GetByEmailAsync(string email);
+        Task<IDataResult<User>> GetByTelAsync(string tel);
         List<OperationClaim> GetUserOperationClaims(User user);
-        Task<IResult> Add(User user);
-        Task<IResult> Delete(int user);
-        IResult Delete(List<int> users);
-        Task<IResult> Update(User user);
+        Task<IResult> AddAsync(User user);
+        Task<IResult> DeleteAsync(int user);
+        Task<IResult> DeleteListAsync(List<int> users);
+        Task<IResult> UpdateAsync(User user);
     }
 }

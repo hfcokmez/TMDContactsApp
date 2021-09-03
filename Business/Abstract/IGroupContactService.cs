@@ -9,10 +9,10 @@ namespace Business.Abstract
 {
     public interface IGroupContactService
     {
-        Task<IDataResult<List<Contact>>> GetListByGroupId(int groupId);
-        Task<IDataResult<List<Group>>> GetListByContactId(int contactId);
-        Task<IDataResult<List<Contact>>> GetListByGroupId(int groupId, int pageNumber, int pageSize);
-        Task<IResult> Add(GroupContact groupContact);
-        IResult Delete(GroupContact groupContact);
+        Task<IDataResult<List<Contact>>> GetListByGroupIdAsync(int groupId);
+        Task<IDataResult<List<Group>>> GetListByContactIdAsync(int contactId);
+        Task<IDataResult<List<Contact>>> GetListByGroupIdAsync(int groupId, int pageNumber, int pageSize);
+        Task<IResult> AddAsync(GroupContact groupContact);
+        Task<IResult> DeleteAsync(GroupContact groupContact);
     }
 }

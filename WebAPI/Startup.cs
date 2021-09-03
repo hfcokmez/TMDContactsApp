@@ -20,6 +20,8 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace WebAPI
@@ -76,7 +78,7 @@ namespace WebAPI
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
             });
             // Auto Mapper Configurations
-            var mapperConfig = new MapperConfiguration(mc =>
+            MapperConfiguration mapperConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new UserProfile());
             });

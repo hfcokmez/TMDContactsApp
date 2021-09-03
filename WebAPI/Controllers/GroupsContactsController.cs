@@ -19,38 +19,38 @@ namespace WebAPI.Controllers
         {
             _groupContactService = groupContactService;
         }
-        [HttpPost(template: "Add")]
-        public async Task<IActionResult> Add(GroupContact groupContact)
+        [HttpPost(template: "AddAsync")]
+        public async Task<IActionResult> AddAsync(GroupContact groupContact)
         {
-            var result = await _groupContactService.Add(groupContact);
+            var result = await _groupContactService.AddAsync(groupContact);
             if (result.Success) return Ok(result);          
             else return BadRequest(result);        
         }
-        [HttpPost(template: "Delete")]
-        public IActionResult Delete(GroupContact groupContact)
+        [HttpPost(template: "DeleteAsync")]
+        public async Task<IActionResult> DeleteAsync(GroupContact groupContact)
         {
-            var result = _groupContactService.Delete(groupContact);
+            var result = await _groupContactService.DeleteAsync(groupContact);
             if (result.Success) return Ok(result);         
             else return BadRequest(result);
         }
-        [HttpGet(template: "GetListByContactId")]
-        public async Task<IActionResult> GetListByContactId(int contactId)
+        [HttpGet(template: "GetListByContactIdAsync")]
+        public async Task<IActionResult> GetListByContactIdAsync(int contactId)
         {
-            var result = await _groupContactService.GetListByContactId(contactId);
+            var result = await _groupContactService.GetListByContactIdAsync(contactId);
             if (result.Success) return Ok(result.Data);       
             else return BadRequest(result);
         }
-        [HttpGet(template: "GetListByGroupId")]
-        public async Task<IActionResult> GetListByGroupId(int groupId)
+        [HttpGet(template: "GetListByGroupIdAsync")]
+        public async Task<IActionResult> GetListByGroupIdAsync(int groupId)
         {
-            var result = await _groupContactService.GetListByGroupId(groupId);
+            var result = await _groupContactService.GetListByGroupIdAsync(groupId);
             if (result.Success) return Ok(result.Data);  
             else return BadRequest(result);
         }
-        [HttpGet(template: "GetListByGroupIdPagination")]
-        public async Task<IActionResult> GetListByGroupIdPagination(int groupId, int pageNumber, int pageSize)
+        [HttpGet(template: "GetListByGroupIdPaginationAsync")]
+        public async Task<IActionResult> GetListByGroupIdPaginationAsync(int groupId, int pageNumber, int pageSize)
         {
-            var result = await _groupContactService.GetListByGroupId(groupId, pageNumber, pageSize);
+            var result = await _groupContactService.GetListByGroupIdAsync(groupId, pageNumber, pageSize);
             if (result.Success) return Ok(result.Data);
             else return BadRequest(result);
         }

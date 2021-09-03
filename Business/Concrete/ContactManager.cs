@@ -4,6 +4,7 @@ using Core.Entities.Concrete;
 using Core.Utilities.Contents;
 using Core.Utilities.Results;
 using Core.Utilities.Services;
+using DataAccess;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.Dto;
@@ -24,39 +25,38 @@ namespace Business.Concrete
             _userService = userService;
         }
 
-        public async Task<IResult> Add(Contact contact)
+        public async Task<IResult> AddAsync(Contact contact)
         {
-            var isUserInContactsList = await IsUserInContactsList(contact.UserId, contact.Tel);
+            var isUserInContactsList = await IsUserInContactsListAsync(contact.UserId, contact.Tel);
             if (isUserInContactsList.Success) return new ErrorResult(Messages.ContactAlreadyExist);
-            if (await _unitOfWork.Contacts.Add(contact, "AddContact"))
+            if (await _unitOfWork.Contacts.AddAsync(contact, "AddContact"))
             {
                 return new SuccessResult(Messages.ContactAddSuccess);
             }
             return new ErrorResult(Messages.ContactAddFail);
         }
 
-        public async Task<IResult> Delete(int contact)
+        public async Task<IResult> DeleteAsync(int contact)
         {
-            if (await _unitOfWork.Contacts.Delete(contact, "DeleteContact"))
+            if (await _unitOfWork.Contacts.DeleteAsync(new { @Id = contact}, "DeleteContact"))
             {
                 return new SuccessResult(Messages.ContactDeleteSuccess);
             }
             return new ErrorResult(Messages.ContactDeleteFail);
         }
 
-        public IResult Delete(List<int> contacts)
+        public async Task<IResult> DeleteListAsync(List<int> contacts)
         {
-            if (_unitOfWork.Contacts.Delete(contacts, "DeleteContact"))
+            if (await _unitOfWork.Contacts.DeleteListAsync(contacts, "DeleteContact"))
             {
                 return new SuccessResult(Messages.ContactsDeleteSuccess);
             }
             return new ErrorResult(Messages.ContactDeleteFail);
         }
-
-        public async Task<IDataResult<Contact>> GetById(int contactId)
+        public async Task<IDataResult<Contact>> GetByIdAsync(int contactId)
         {
 
-            var contact = await _unitOfWork.Contacts.Get(new { @Id = contactId }, "GetContact");
+            var contact = await _unitOfWork.Contacts.GetAsync(new { @Id = contactId }, "GetContact");
             if (contact != null)
             {
                 return new SuccessDataResult<Contact>(contact);
@@ -64,11 +64,11 @@ namespace Business.Concrete
             return new ErrorDataResult<Contact>(Messages.ContactGetFail);
         }
 
-        public async Task<IDataResult<List<Contact>>> GetList()
+        public async Task<IDataResult<List<Contact>>> GetListAsync()
         {
             try
             {
-                var contactList = await _unitOfWork.Contacts.GetList("GetAllContacts");
+                var contactList = await _unitOfWork.Contacts.GetListAsync("GetAllContacts");
                 return new SuccessDataResult<List<Contact>>(contactList.ToList());
             }
             catch (ArgumentNullException)
@@ -77,12 +77,12 @@ namespace Business.Concrete
             }
         }
 
-        public async Task<IDataResult<PaginationDto<Contact>>> GetListByUserId(int userId, int pageNumber, int pageSize)
+        public async Task<IDataResult<PaginationDto<Contact>>> GetListByUserIdAsync(int userId, int pageNumber, int pageSize)
         {
-            var contactCount = _unitOfWork.Contacts.GetCount(new { UserId = userId }, "Count", "GetContactCountByUserId");
+            var contactCount = await _unitOfWork.Contacts.GetCountAsync(new { UserId = userId }, "Count", "GetContactCountByUserId");
             if (contactCount > 0)
             {
-                var contactList = await _unitOfWork.Contacts.GetList(new { UserId = userId, PageNumber = pageNumber, PageSize = pageSize },
+                var contactList = await _unitOfWork.Contacts.GetListAsync(new { UserId = userId, PageNumber = pageNumber, PageSize = pageSize },
                     "GetContactsByUserIdPagination");
                 var result = new PaginationDto<Contact>
                 {
@@ -101,11 +101,11 @@ namespace Business.Concrete
                 return new ErrorDataResult<PaginationDto<Contact>>(Messages.ContactGetListFail);
         }
 
-        public async Task<IDataResult<List<Contact>>> GetListByUserId(int userId)
+        public async Task<IDataResult<List<Contact>>> GetListByUserIdAsync(int userId)
         {
             try
             {
-                var contactList = await _unitOfWork.Contacts.GetList(new { @UserId = userId }, "GetContactsByUserId");
+                var contactList = await _unitOfWork.Contacts.GetListAsync(new { @UserId = userId }, "GetContactsByUserId");
                 return new SuccessDataResult<List<Contact>>(contactList.ToList());
             }
             catch (ArgumentNullException)
@@ -114,12 +114,12 @@ namespace Business.Concrete
             }
         }
 
-        public async Task<IDataResult<List<Group>>> GetListByContactId(int contactId)
+        public async Task<IDataResult<List<Group>>> GetListByContactIdAsync(int contactId)
         {
             try
             {
                 var contact = new { ContactId = contactId };
-                var contactGroupList = await _unitOfWork.Groups.GetList(contact, "GetGroupsOfAContact");
+                var contactGroupList = await _unitOfWork.Groups.GetListAsync(contact, "GetGroupsOfAContact");
                 return new SuccessDataResult<List<Group>>(contactGroupList.ToList());
             }
             catch (ArgumentNullException)
@@ -128,18 +128,18 @@ namespace Business.Concrete
             }
         }
 
-        public async Task<IResult> Update(Contact contact)
+        public async Task<IResult> UpdateAsync(Contact contact)
         {
-            if (await _unitOfWork.Contacts.Update(contact, "UpdateContact"))
+            if (await _unitOfWork.Contacts.UpdateAsync(contact, "UpdateContact"))
             {
                 return new SuccessResult(Messages.ContactUpdateSuccess);
             }
             return new ErrorResult(Messages.ContactUpdateFail);
         }
 
-        public async Task<IDataResult<Contact>> IsUserInContactsList(int userId, string tel)
+        public async Task<IDataResult<Contact>> IsUserInContactsListAsync(int userId, string tel)
         {
-            var contact = await _unitOfWork.Contacts.Get(new { @Id = userId, @Tel = tel }, "IsUserInContactsList");
+            var contact = await _unitOfWork.Contacts.GetAsync(new { @Id = userId, @Tel = tel }, "IsUserInContactsList");
             if (contact != null)
             {
                 return new SuccessDataResult<Contact>(contact);
@@ -147,23 +147,23 @@ namespace Business.Concrete
             return new ErrorDataResult<Contact>();
         }
 
-        public async Task<IResult> AddWithSynch(Contact contact)
+        public async Task<IResult> AddWithAsync(Contact contact)
         {
-            var userCheck = await _userService.GetByTel(contact.Tel);
+            var userCheck = await _userService.GetByTelAsync(contact.Tel);
             if (userCheck.Success)
             {
-                var task = await _userService.GetById(contact.UserId);
+                var task = await _userService.GetByIdAsync(contact.UserId);
                 var tel = task.Data.Tel;
-                var userInContactList = await IsUserInContactsList(userCheck.Data.Id, tel);
+                var userInContactList = await IsUserInContactsListAsync(userCheck.Data.Id, tel);
                 if (userInContactList.Success)
                 {
                     var contactExist = ObjectBindHelper.ObjectToObject<User, Contact>(userCheck.Data, contact);
-                    var resultExist = await Add(contactExist);
+                    var resultExist = await AddAsync(contactExist);
                     if (resultExist.Success) return new SuccessResult(resultExist.Message);
                     else return new ErrorResult(resultExist.Message);
                 }
             }
-            var result = await Add(contact);
+            var result = await AddAsync(contact);
             if (result.Success) return new SuccessResult(result.Message);
             else return new ErrorResult(result.Message);
         }

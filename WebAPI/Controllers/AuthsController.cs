@@ -24,7 +24,7 @@ namespace WebAPI.Controllers
         [HttpPost(template: "Login")]
         public async Task<IActionResult> Login(UserLoginDto userLoginDto)
         {
-            var userLogin = await _authService.Login(userLoginDto);
+            var userLogin = await _authService.LoginAsync(userLoginDto);
             if (!userLogin.Success)return BadRequest(userLogin);
             var result = _authService.CreateAccessToken(userLogin.Data);
             if (result.Success)return Ok(result.Data);
@@ -33,7 +33,7 @@ namespace WebAPI.Controllers
         [HttpPost(template: "Register")]
         public async Task<IActionResult> Register(UserRegisterDto userRegisterDto)
         {
-            var userRegister = await _authService.Register(userRegisterDto);
+            var userRegister = await _authService.RegisterAsync(userRegisterDto);
             if (!userRegister.Success)return BadRequest(userRegister);
             var result = _authService.CreateAccessToken(userRegister.Data);
             if (result.Success)return Ok(result.Data);
@@ -49,21 +49,21 @@ namespace WebAPI.Controllers
         [HttpGet(template: "Verification")]
         public async Task<IActionResult> Verification(string email)
         {
-            var result = await _authService.Verification(email);
+            var result = await _authService.VerificationAsync(email);
             if (result.Success)return Ok(result.Data);
             return BadRequest(result);
         }
         [HttpPost(template: "ForgotPassword")]
         public async Task<IActionResult> ForgotPassword(string email)
         {
-            var result = await _authService.Verification(email);
+            var result = await _authService.VerificationAsync(email);
             if (result.Success)return Ok(result.Data);
             return BadRequest(result);
         }
         [HttpPost(template: "ResetPassword")]
         public async Task<IActionResult> ResetPassword(UserLoginDto userLoginDto)
         {
-            var result = await _authService.ResetPassword(userLoginDto);
+            var result = await _authService.ResetPasswordAsync(userLoginDto);
             if (!result.Success)return BadRequest(result);
             return Ok(result);
         }
@@ -71,7 +71,7 @@ namespace WebAPI.Controllers
         [Authorize]
         public async Task<IActionResult> ResetPasswordVerification(UserLoginDto userLoginDto, string currentPassword)
         {
-            var result = await _authService.ResetPassword(userLoginDto, currentPassword);
+            var result = await _authService.ResetPasswordAsync(userLoginDto, currentPassword);
             if (!result.Success)return BadRequest(result);
             return Ok(result);
         }

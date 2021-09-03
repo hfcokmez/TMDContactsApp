@@ -32,9 +32,9 @@ namespace Business.Concrete
             return new SuccessDataResult<AccessToken>(accessToken, Messages.AccessTokenCreated);
         }
 
-        public async Task<IDataResult<User>> Login(UserLoginDto userLoginDto)
+        public async Task<IDataResult<User>> LoginAsync(UserLoginDto userLoginDto)
         {
-            var userExists = await UserExists(userLoginDto.Email);
+            var userExists = await UserExistsAsync(userLoginDto.Email);
             if (userExists.Data == null)
             {
                 return new ErrorDataResult<User>(Messages.UserNotFound);
@@ -46,25 +46,24 @@ namespace Business.Concrete
             return new SuccessDataResult<User>(userExists.Data, Messages.SuccessLogin);
         }
 
-        public async Task<IDataResult<User>> Register(UserRegisterDto userRegisterDto)
+        public async Task<IDataResult<User>> RegisterAsync(UserRegisterDto userRegisterDto)
         {
-            var emailExists = await UserExists(userRegisterDto.Email);
-            var telExist = await _userService.GetByTel(userRegisterDto.Tel);
+            var emailExists = await UserExistsAsync(userRegisterDto.Email);
+            var telExist = await _userService.GetByTelAsync(userRegisterDto.Tel);
             if (emailExists.Success) return new ErrorDataResult<User>(emailExists.Message);
             else if (telExist.Success) return new ErrorDataResult<User>(telExist.Message); 
             HashingHelper.CreatePasswordHash(userRegisterDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
             User user = _mapper.Map<User>(userRegisterDto);
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
-            var result = await _userService.Add(user);
+            var result = await _userService.AddAsync(user);
             if (result.Success) return new SuccessDataResult<User>(user, Messages.UserRegistered);
             else return new ErrorDataResult<User>(Messages.UserAddFail);
-
         }
 
-        public async Task<IDataResult<int>> Verification(string email)
+        public async Task<IDataResult<int>> VerificationAsync(string email)
         {
-            var userExists = await UserExists(email);
+            var userExists = await UserExistsAsync(email);
             if (!userExists.Success)
             {
                 return new ErrorDataResult<int>(userExists.Message);
@@ -80,30 +79,29 @@ namespace Business.Concrete
             //return new ErrorDataResult<int>();
         }
 
-        public async Task<IResult> ResetPassword(UserLoginDto userLoginDto)
+        public async Task<IResult> ResetPasswordAsync(UserLoginDto userLoginDto)
         {
-            var user = await UserExists(userLoginDto.Email);
+            var user = await UserExistsAsync(userLoginDto.Email);
             if (!user.Success)
             {
                 return new ErrorDataResult<User>(user.Message);
             }
-            var login = await Login(userLoginDto);
+            var login = await LoginAsync(userLoginDto);
             if (login.Success) return new ErrorResult(Messages.SamePasswordFail);
 
             HashingHelper.CreatePasswordHash(userLoginDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
             user.Data.PasswordHash = passwordHash;
             user.Data.PasswordSalt = passwordSalt;
-            await _userService.Update(user.Data);
-
+            await _userService.UpdateAsync(user.Data);
             return new SuccessResult(Messages.ResetSuccess);
         }
 
-        public async Task<IResult> ResetPassword(UserLoginDto userLoginDto, string currentPassword)
+        public async Task<IResult> ResetPasswordAsync(UserLoginDto userLoginDto, string currentPassword)
         {
             UserLoginDto test = new UserLoginDto { Email = userLoginDto.Email, Password = currentPassword };
-            var user = await Login(test);
+            var user = await LoginAsync(test);
             if (!user.Success) return new ErrorResult(user.Message);
-            var login = await Login(userLoginDto);
+            var login = await LoginAsync(userLoginDto);
             if (login.Success) return new ErrorResult(Messages.SamePasswordFail);
 
             if (HashingHelper.VerifyPasswordHash(currentPassword, user.Data.PasswordHash, user.Data.PasswordSalt))
@@ -111,15 +109,15 @@ namespace Business.Concrete
                 HashingHelper.CreatePasswordHash(userLoginDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
                 user.Data.PasswordHash = passwordHash;
                 user.Data.PasswordSalt = passwordSalt;
-                var result = await _userService.Update(user.Data);
+                var result = await _userService.UpdateAsync(user.Data);
                 if (result.Success) return new SuccessResult( Messages.ResetSuccess);
                 else return new ErrorResult(Messages.UserUpdateFail);
             }
             else return new ErrorResult(Messages.PasswordsNotMatched);
         }
-        public async Task<IDataResult<User>> UserExists(string email)
+        public async Task<IDataResult<User>> UserExistsAsync(string email)
         {
-            var userExists = await _userService.GetByEmail(email);
+            var userExists = await _userService.GetByEmailAsync(email);
             if (userExists.Data == null)
             {
                 return new ErrorDataResult<User>( Messages.UserNotFound);

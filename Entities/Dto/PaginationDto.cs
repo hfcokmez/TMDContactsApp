@@ -7,7 +7,10 @@ namespace Entities.Dto
 {
     public class PaginationDto<T>: IDto
     {
-        public PaginationDto(){FirstPage = 1;}
+        public PaginationDto()
+        {
+            FirstPage = 1;
+        }
         public List<T> Data { get; set; }
         public int PreviousPage { get; set; }
         public int CurrentPage { get; set; }

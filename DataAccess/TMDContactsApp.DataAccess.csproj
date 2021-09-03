@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj" />
-    <ProjectReference Include="..\Entities\Entities.csproj" />
+    <ProjectReference Include="..\Core\TMDContactsApp.Core.csproj" />
+    <ProjectReference Include="..\Entities\TMDContactsApp.Entities.csproj" />
   </ItemGroup>
 
 </Project>

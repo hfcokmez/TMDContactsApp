@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TMDContactsApp.Business</name>
+    </assembly>
+    <members>
+        <member name="M:Business.Abstract.IContactService.GetByIdAsync(System.Int32)">
+            <summary>
+            Gets the Contact object with the given Contact Id parameter. 
+            </summary>
+            <param name="contactId">An integer value bigger than 0.</param>
+            <returns>Returns an object of DataResult asynchronously.</returns>
+        </member>
+        <member name="M:Business.Abstract.IContactService.GetListAsync">
+            <summary>
+            Gets all of the Contacts in a List.
+            </summary>
+            <returns>Asynchronously returns an object of DataResult which contains List of Contact's.</returns>
+        </member>
+        <member name="M:Business.Abstract.IContactService.GetListByUserIdAsync(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Gets the User's Contact List with pagination by the given User Id, Page Number and Page Size Parameters.
+            </summary>
+            <param name="userId">An integer value which should be bigger than 0.</param>
+            <param name="pageNumber">Page number of result page.</param>
+            <param name="pageSize">Size of the result page.</param>
+            <returns>Asynchronously returns a DataResult object, containing selected part of the User's Contact List.</returns>
+        </member>
+        <member name="M:Business.Abstract.IContactService.GetListByUserIdAsync(System.Int32)">
+            <summary>
+            Gets the User's Contact List with the given User Id, Page Number and Page Size Parameters.
+            </summary>
+            <param name="userId">An integer value which required to access the User's Contacts.</param>
+            <returns>Asynchronously returns a DataResult object, containing part of the User's Contact List.</returns>
+        </member>
+        <member name="M:Business.Abstract.IContactService.IsUserInContactsListAsync(System.Int32,System.String)">
+            <summary>
+            Checks the User is in the Contact's list.
+            </summary>
+            <param name="userId"></param>
+            <param name="tel"></param>
+            <returns>Asynchronously returns a boolean value depending on whether the User is in the Contact's list</returns>
+        </member>
+        <member name="M:Business.Abstract.IContactService.AddAsync(Entities.Concrete.Contact)">
+            <summary>
+            Adds the given Contact according to the UserId parameter inside the Contact Object.
+            </summary>
+            <param name="contact">Contact entity object.</param>
+            <returns>Asynchronously returns a Result object, containing Message and Success information of the operation.</returns>
+        </member>
+        <member name="M:Business.Abstract.IContactService.AddWithAsync(Entities.Concrete.Contact)">
+            <summary>
+            Adds the given Contact to the User's Contact List. If the User is in the list of the Contact they are trying to add, it synchronizes the Contact information with the information of the pre-registered User.
+            </summary>
+            <param name="contact">Contact entity object.</param>
+            <returns>Asynchronously returns a Result object, containing Message and Success information of the operation.</returns>
+        </member>
+        <member name="M:Business.Abstract.IContactService.DeleteAsync(System.Int32)">
+            <summary>
+            Deletes the given Contact according to the Id parameter inside the Contact Object.
+            </summary>
+            <param name="contact">Contact entity object.</param>
+            <returns>Asynchronously returns a Result object, containing Message and Success information of the operation.</returns>
+        </member>
+        <member name="M:Business.Abstract.IContactService.DeleteListAsync(System.Collections.Generic.List{System.Int32})">
+            <summary>
+            Deletes the given List of Contact's according to the Id parameter inside the List of Contact Object.
+            </summary>
+            <param name="contacts">Contact Id List object.</param>
+            <returns>Asynchronously returns a Result object, containing Message and Success information of the operation.</returns>
+        </member>
+        <member name="M:Business.Abstract.IContactService.UpdateAsync(Entities.Concrete.Contact)">
+            <summary>
+            Updates the given Contact according to the Id parameter inside the Contact Object.
+            </summary>
+            <param name="contact">Contact entity object.</param>
+            <returns>Asynchronously returns a Result object, containing Message and Success information of the operation.</returns>
+        </member>
+        <member name="M:Business.Abstract.IGroupService.GetByIdAsync(System.Int32)">
+            <summary>
+            Gets the Group object with the given Group Id parameter. 
+            </summary>
+            <param name="groupId">An integer value bigger than 0.</param>
+            <returns>Returns an object of DataResult asynchronously.</returns>
+        </member>
+        <member name="M:Business.Abstract.IGroupService.GetListAsync">
+            <summary>
+            Gets all of the Groups in a List object.
+            </summary>
+            <returns>Asynchronously returns an object of DataResult which contains List of Contact's.</returns>
+        </member>
+        <member name="M:Business.Abstract.IGroupService.GetListAsync(System.Int32)">
+            <summary>
+            Gets the User's Group List with the given User Id, Page Number and Page Size Parameters.
+            </summary>
+            <param name="userId">An integer value which should be bigger than 0.</param>
+            <returns>Asynchronously returns a DataResult object, containing the User's Group List.</returns>
+        </member>
+        <member name="M:Business.Abstract.IGroupService.AddAsync(Entities.Concrete.Group)">
+            <summary>
+            Asynchronously adds the given Group according to the UserId parameter inside the Group Object.
+            </summary>
+            <param name="group">Group entity object.</param>
+            <returns>Asynchronously returns a Result object, containing Message and Success information of the operation.</returns>
+        </member>
+        <member name="M:Business.Abstract.IGroupService.DeleteAsync(System.Int32)">
+            <summary>
+            Asynchronously deletes the given Group according to the Id parameter inside the Group Object.
+            </summary>
+            <param name="group">Group entity object.</param>
+            <returns>Asynchronously returns a Result object, containing Message and Success information of the operation.</returns>
+        </member>
+        <member name="M:Business.Abstract.IGroupService.DeleteListAsync(System.Collections.Generic.List{System.Int32})">
+            <summary>
+            Asynchronously deletes the given List of Group's according to the Id parameter inside the List of Group Object.
+            </summary>
+            <param name="groups">Group entity object.</param>
+            <returns>Asynchronously returns a Result object, containing Message and Success information of the operation.</returns>
+        </member>
+        <member name="M:Business.Abstract.IGroupService.UpdateAsync(Entities.Concrete.Group)">
+            <summary>
+            Asynchronously updates the given Group according to the Id parameter inside the Group Object.
+            </summary>
+            <param name="group">Group entity object.</param>
+            <returns>Asynchronously returns a Result object, containing Message and Success information of the operation.</returns>
+        </member>
+    </members>
+</doc>

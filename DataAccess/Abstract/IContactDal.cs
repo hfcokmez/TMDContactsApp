@@ -9,7 +9,7 @@ using System.Text;
 
 namespace DataAccess.Abstract
 {
-    public interface IContactDal: IEntityRepository<Contact>
+    public interface IContactDal: IEntityRepositoryAsync<Contact>
     {
     }
 }

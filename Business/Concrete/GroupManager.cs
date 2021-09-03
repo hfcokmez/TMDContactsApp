@@ -20,37 +20,37 @@ namespace Business.Concrete
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IResult> Add(Group group)
+        public async Task<IResult> AddAsync(Group group)
         {
-            if (await _unitOfWork.Groups.Get(new { @UserId = group.UserId, @Name = group.Name }, "IsGroupInUsersList") != null) return new ErrorResult(Messages.GroupAlreadyExists);
-            if (await _unitOfWork.Groups.Add(group, "AddGroup"))
+            if (await _unitOfWork.Groups.GetAsync(new { @UserId = group.UserId, @Name = group.Name }, "IsGroupInUsersList") != null) return new ErrorResult(Messages.GroupAlreadyExists);
+            if (await _unitOfWork.Groups.AddAsync(group, "AddGroup"))
             {
                 return new SuccessResult(Messages.GroupAddSuccess);
             }
             return new ErrorResult(Messages.GroupAddFail);
         }
 
-        public async Task<IResult> Delete(int group)
+        public async Task<IResult> DeleteAsync(int group)
         {
-            if (await _unitOfWork.Groups.Delete(group, "DeleteGroup"))
+            if (await _unitOfWork.Groups.DeleteAsync(new { @Id = group }, "DeleteGroup"))
             {
                 return new SuccessResult(Messages.GroupDeleteSuccess);
             }
             return new ErrorResult(Messages.GroupDeleteFail);
         }
 
-        public IResult Delete(List<int> groups)
+        public async Task<IResult> DeleteListAsync(List<int> groups)
         {
-            if (_unitOfWork.Groups.Delete(groups, "DeleteGroup"))
+            if (await _unitOfWork.Groups.DeleteListAsync(groups, "DeleteGroup"))
             {
                 return new SuccessResult(Messages.GroupsDeleteSuccess);
             }
             return new ErrorResult(Messages.GroupDeleteFail);
         }
 
-        public async Task<IDataResult<Group>> GetById(int groupId)
+        public async Task<IDataResult<Group>> GetByIdAsync(int groupId)
         {
-            var group = await _unitOfWork.Groups.Get(new { @Id = groupId }, "GetGroup");
+            var group = await _unitOfWork.Groups.GetAsync(new { @Id = groupId }, "GetGroup");
             if (group != null)
             {
                 return new SuccessDataResult<Group>(group);
@@ -58,11 +58,11 @@ namespace Business.Concrete
             return new ErrorDataResult<Group>(Messages.GroupGetFail);
         }
 
-        public async Task<IDataResult<List<Group>>> GetList()
+        public async Task<IDataResult<List<Group>>> GetListAsync()
         {
             try
             {
-                var groupList = await _unitOfWork.Groups.GetList("GetAllGroups");
+                var groupList = await _unitOfWork.Groups.GetListAsync("GetAllGroups");
                 return new SuccessDataResult<List<Group>>(groupList.ToList());
             }
             catch (ArgumentNullException)
@@ -71,12 +71,12 @@ namespace Business.Concrete
             }
         }
 
-        public async Task<IDataResult<List<Group>>> GetList(int userId)
+        public async Task<IDataResult<List<Group>>> GetListAsync(int userId)
         {
             try
             {
                 var user = new { UserId = userId };
-                var groupList = await _unitOfWork.Groups.GetList(user, "GetGroupsByUserId");
+                var groupList = await _unitOfWork.Groups.GetListAsync(user, "GetGroupsByUserId");
                 return new SuccessDataResult<List<Group>>(groupList.ToList());
             }
             catch (ArgumentNullException)
@@ -85,9 +85,9 @@ namespace Business.Concrete
             }
         }
 
-        public async Task<IResult> Update(Group group)
+        public async Task<IResult> UpdateAsync(Group group)
         {
-            if (await _unitOfWork.Groups.Update(group, "UpdateGroup"))
+            if (await _unitOfWork.Groups.UpdateAsync(group, "UpdateGroup"))
             {
                 return new SuccessResult(Messages.GroupUpdateSuccess);
             }

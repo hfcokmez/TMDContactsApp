@@ -18,66 +18,66 @@ namespace WebAPI.Controllers
         {
             _contactService = contactService;
         }
-        [HttpGet(template: "GetAll")]
+        [HttpGet(template: "GetAllAsync")]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _contactService.GetList();
+            var result = await _contactService.GetListAsync();
             if (result.Success) return Ok(result.Data);
             else return BadRequest(result);
         }
-        [HttpGet(template: "GetListByUserId")]
+        [HttpGet(template: "GetListByUserIdAsync")]
         public async Task<IActionResult> GetListByUserId(int userId)
         {
-            var result = await _contactService.GetListByUserId(userId);
+            var result = await _contactService.GetListByUserIdAsync(userId);
             if (result.Success) return Ok(result.Data);
             else return BadRequest(result);   
         }
-        [HttpGet(template: "GetListByUserIdPagination")]
-        public async Task<IActionResult> GetListByUserIdPagination(int userId, int pageNumber, int pageSize)
+        [HttpGet(template: "GetListByUserIdPaginationAsync")]
+        public async Task<IActionResult> GetListByUserIdPaginationAsync(int userId, int pageNumber, int pageSize)
         {
-            var result = await _contactService.GetListByUserId(userId, pageNumber, pageSize);
+            var result = await _contactService.GetListByUserIdAsync(userId, pageNumber, pageSize);
             if (result.Success) return Ok(result.Data);
             else return BadRequest(result);
         }
-        [HttpGet(template: "Get")]
+        [HttpGet(template: "GetAsync")]
         public async Task<IActionResult> Get(int id)
         {
-            var result = await _contactService.GetById(id);
+            var result = await _contactService.GetByIdAsync(id);
             if (result.Success) return Ok(result.Data);
             else return BadRequest(result);       
         }
-        [HttpPost (template: "Add")]
+        [HttpPost (template: "AddAsync")]
         public async Task<IActionResult> Add(Contact contact)
         {
-            var result = await _contactService.Add(contact);
+            var result = await _contactService.AddAsync(contact);
             if (result.Success) return Ok(result);
             else return BadRequest(result);     
         }
-        [HttpPost(template: "AddWithSynch")]
-        public async Task<IActionResult> AddWithSynch(Contact contact)
+        [HttpPost(template: "AddWithAsync")]
+        public async Task<IActionResult> AddWithAsynch(Contact contact)
         {
-            var result = await _contactService.AddWithSynch(contact);
+            var result = await _contactService.AddWithAsync(contact);
             if (result.Success) return Ok(result);
             else return BadRequest(result);
         }
-        [HttpPost(template: "Delete")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpPost(template: "DeleteAsync")]
+        public async Task<IActionResult> DeleteAsync(int id)
         {
-            var result = await _contactService.Delete(id);
+            var result = await _contactService.DeleteAsync(id);
             if (result.Success) return Ok(result);
             else return BadRequest(result);  
         }
-        [HttpPost(template: "DeleteMultiple")]
-        public IActionResult DeleteMultiple(List<int> contacts)
+        [HttpPost(template: "DeleteMultipleAsync")]
+        public async Task<IActionResult> DeleteListAsync(List<int> contacts)
         {
-            var result = _contactService.Delete(contacts);
+            var result = await _contactService.DeleteListAsync(contacts);
             if (result.Success) return Ok(result);
             else return BadRequest(result);
         }
-        [HttpPost(template: "Update")]
-        public async Task<IActionResult> Update(Contact contact)
+        [HttpPost(template: "UpdateAsync")]
+        public async Task<IActionResult> UpdateAsync(Contact contact)
         {
-            var result = await _contactService.Update(contact);
+            var result = await _contactService.UpdateAsync(contact);
             if (result.Success) return Ok(result);
             else return BadRequest(result);       
         }

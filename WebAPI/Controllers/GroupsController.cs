@@ -20,52 +20,52 @@ namespace WebAPI.Controllers
         {
             _groupService = groupService;
         }
-        [HttpPost(template: "Add")]
-        public async Task<IActionResult> Add(Group group)
+        [HttpPost(template: "AddAsync")]
+        public async Task<IActionResult> AddAsync(Group group)
         {
-            var result = await _groupService.Add(group);
+            var result = await _groupService.AddAsync(group);
             if (result.Success) return Ok(result); 
             else return BadRequest(result);      
         }
-        [HttpPost(template: "Delete")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpPost(template: "DeleteAsync")]
+        public async Task<IActionResult> DeleteAsync(int id)
         {
-            var result = await _groupService.Delete(id);
+            var result = await _groupService.DeleteAsync(id);
             if (result.Success) return Ok(result);        
             else return BadRequest(result);
         }
-        [HttpPost(template: "DeleteMultiple")]
-        public IActionResult DeleteMultiple(List<int> groups)
+        [HttpPost(template: "DeleteMultipleAsync")]
+        public async Task<IActionResult> DeleteListAsync(List<int> groups)
         {
-            var result = _groupService.Delete(groups);
+            var result = await _groupService.DeleteListAsync(groups);
             if (result.Success) return Ok(result);
             else return BadRequest(result);
         }
-        [HttpPost(template: "Update")]
-        public async Task<IActionResult> Update(Group group)
+        [HttpPost(template: "UpdateAsync")]
+        public async Task<IActionResult> UpdateAsync(Group group)
         {
-            var result = await _groupService.Update(group);
+            var result = await _groupService.UpdateAsync(group);
             if (result.Success) return Ok(result);           
             else return BadRequest(result);       
         }
-        [HttpGet(template: "Get")]
-        public async Task<IActionResult> Get(int id)
+        [HttpGet(template: "GetAsync")]
+        public async Task<IActionResult> GetAsync(int id)
         {
-            var result = await _groupService.GetById(id);
+            var result = await _groupService.GetByIdAsync(id);
             if (result.Success) return Ok(result.Data);
             else return BadRequest(result);     
         }
-        [HttpGet(template: "GetAll")]
-        public async Task<IActionResult> GetList()
+        [HttpGet(template: "GetAllAsync")]
+        public async Task<IActionResult> GetListAsync()
         {
-            var result = await _groupService.GetList();
+            var result = await _groupService.GetListAsync();
             if (result.Success) return Ok(result.Data);       
             else return BadRequest(result);
         }
-        [HttpGet(template: "GetListByUserId")]
-        public async Task<IActionResult> GetUserGroups(int userId)
+        [HttpGet(template: "GetListByUserIdAsync")]
+        public async Task<IActionResult> GetUserGroupsAsync(int userId)
         {
-            var result = await _groupService.GetList(userId);
+            var result = await _groupService.GetListAsync(userId);
             if (result.Success) return Ok(result.Data);
             else return BadRequest(result);    
         }
