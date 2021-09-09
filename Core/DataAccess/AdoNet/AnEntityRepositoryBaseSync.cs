@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 namespace Core.DataAccess.AdoNet
 {
     public class AnEntityRepositoryBaseSync<TEntity> : IEntityRepositorySync<TEntity>
-        where TEntity : class, IEntity, new()
+        where TEntity: class, IEntity, new()
     {
         protected readonly static string connectionString = @"Server=TESTWEBDB\TESTWEBDB02;Database=TMDContacts;User Id=db_testadmin;Password=sabahsoft;Trusted_Connection=False;MultipleActiveResultSets=true;";
 
@@ -234,7 +234,7 @@ namespace Core.DataAccess.AdoNet
                 }
             }
         }
-        public bool Delete(dynamic dto, string sProcedure)
+        public bool Delete(dynamic param, string sProcedure)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -245,11 +245,11 @@ namespace Core.DataAccess.AdoNet
                     command.CommandType = CommandType.StoredProcedure;
                     try
                     {
-                        foreach (var property in dto.GetType().GetProperties())
+                        foreach (var property in param.GetType().GetProperties())
                         {
-                            if (property.GetValue(dto, null) != null)
+                            if (property.GetValue(param, null) != null)
                             {
-                                command.Parameters.AddWithValue($"@{property.Name}", property.GetValue(dto, null));
+                                command.Parameters.AddWithValue($"@{property.Name}", property.GetValue(param, null));
                             }
                         }
                         command.ExecuteNonQuery();
@@ -298,7 +298,7 @@ namespace Core.DataAccess.AdoNet
                 }
             }
         }
-        public IList<TEntity> GetList(dynamic dto, string sProcedure)
+        public IList<TEntity> GetList(dynamic param, string sProcedure)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -308,9 +308,9 @@ namespace Core.DataAccess.AdoNet
                     using (var command = new SqlCommand(sProcedure, connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
-                        foreach (var property in dto.GetType().GetProperties())
+                        foreach (var property in param.GetType().GetProperties())
                         {
-                            command.Parameters.AddWithValue($"@{property.Name}", property.GetValue(dto, null));
+                            command.Parameters.AddWithValue($"@{property.Name}", property.GetValue(param, null));
                         }
                         SqlDataReader dataReader = command.ExecuteReader();
                         var entityList = new List<TEntity>();
@@ -340,7 +340,7 @@ namespace Core.DataAccess.AdoNet
                 }
             }
         }
-        public TEntity Get(dynamic dto, string sProcedure)
+        public TEntity Get(dynamic param, string sProcedure)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -350,9 +350,9 @@ namespace Core.DataAccess.AdoNet
                     using (var command = new SqlCommand(sProcedure, connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
-                        foreach (var property in dto.GetType().GetProperties())
+                        foreach (var property in param.GetType().GetProperties())
                         {
-                            command.Parameters.AddWithValue($"@{property.Name}", property.GetValue(dto, null));
+                            command.Parameters.AddWithValue($"@{property.Name}", property.GetValue(param, null));
                         }
                         SqlDataReader dataReader = command.ExecuteReader();
                         if (dataReader.HasRows)
@@ -381,7 +381,7 @@ namespace Core.DataAccess.AdoNet
                 }
             }
         }
-        public int GetCount(dynamic dto, string propertyName, string sProcedure)
+        public int GetCount(dynamic param, string propertyName, string sProcedure)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -391,9 +391,9 @@ namespace Core.DataAccess.AdoNet
                     using (var command = new SqlCommand(sProcedure, connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
-                        foreach (var property in dto.GetType().GetProperties())
+                        foreach (var property in param.GetType().GetProperties())
                         {
-                            command.Parameters.AddWithValue($"@{property.Name}", property.GetValue(dto, null));
+                            command.Parameters.AddWithValue($"@{property.Name}", property.GetValue(param, null));
                         }
                         SqlDataReader dataReader = command.ExecuteReader();
                         if (dataReader.HasRows) dataReader.Read();

@@ -2,7 +2,7 @@
 using Core.Entities.Concrete;
 using Core.Utilities.Contents;
 using Core.Utilities.Results;
-using DataAccess.Abstract;
+using TMDContactsApp.DataAccess.Abstract;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -50,7 +50,7 @@ namespace Business.Concrete
         public async Task<IDataResult<User>> GetByEmailAsync(string email)
         {
             var user = await _unitOfWork.Users.GetAsync(new { @Email = email }, "GetUserByEmail");
-            if(user != null)
+            if (user != null)
             {
                 return new SuccessDataResult<User>(user);
             }
@@ -60,7 +60,7 @@ namespace Business.Concrete
         public async Task<IDataResult<User>> GetByIdAsync(int userId)
         {
             var user = await _unitOfWork.Users.GetAsync(new { @Id = userId }, "GetUser");
-            if(user != null)
+            if (user != null)
             {
                 return new SuccessDataResult<User>(user);
             }
@@ -90,9 +90,9 @@ namespace Business.Concrete
             }
         }
 
-        public List<OperationClaim> GetUserOperationClaims(User user)
+        public async Task<List<OperationClaim>> GetUserOperationClaims(User user)
         {
-            return null;
+            return await _unitOfWork.Users.GetClaims(user.Id, "GetClaims");
         }
 
         public async Task<IResult> UpdateAsync(User user)

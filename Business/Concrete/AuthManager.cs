@@ -25,11 +25,15 @@ namespace Business.Concrete
             _mapper = mapper;
         }
 
-        public IDataResult<AccessToken> CreateAccessToken(User user)
+        public async Task<IDataResult<AccessToken>> CreateAccessToken(User user)
         {
-            //var userClaims = _userService.GetUserOperationClaims(user);
-            var accessToken = _tokenHelper.CreateToken(user);
-            return new SuccessDataResult<AccessToken>(accessToken, Messages.AccessTokenCreated);
+            var userClaims = await _userService.GetUserOperationClaims(user);
+            if (userClaims != null)
+            {
+                var accessToken = _tokenHelper.CreateToken(user, userClaims);
+                return new SuccessDataResult<AccessToken>(accessToken, Messages.AccessTokenCreated);
+            }
+            return new ErrorDataResult<AccessToken>(Messages.AccessTokenNotCreated);
         }
 
         public async Task<IDataResult<User>> LoginAsync(UserLoginDto userLoginDto)
@@ -51,7 +55,7 @@ namespace Business.Concrete
             var emailExists = await UserExistsAsync(userRegisterDto.Email);
             var telExist = await _userService.GetByTelAsync(userRegisterDto.Tel);
             if (emailExists.Success) return new ErrorDataResult<User>(emailExists.Message);
-            else if (telExist.Success) return new ErrorDataResult<User>(telExist.Message); 
+            else if (telExist.Success) return new ErrorDataResult<User>(telExist.Message);
             HashingHelper.CreatePasswordHash(userRegisterDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
             User user = _mapper.Map<User>(userRegisterDto);
             user.PasswordHash = passwordHash;
@@ -110,7 +114,7 @@ namespace Business.Concrete
                 user.Data.PasswordHash = passwordHash;
                 user.Data.PasswordSalt = passwordSalt;
                 var result = await _userService.UpdateAsync(user.Data);
-                if (result.Success) return new SuccessResult( Messages.ResetSuccess);
+                if (result.Success) return new SuccessResult(Messages.ResetSuccess);
                 else return new ErrorResult(Messages.UserUpdateFail);
             }
             else return new ErrorResult(Messages.PasswordsNotMatched);
@@ -120,7 +124,7 @@ namespace Business.Concrete
             var userExists = await _userService.GetByEmailAsync(email);
             if (userExists.Data == null)
             {
-                return new ErrorDataResult<User>( Messages.UserNotFound);
+                return new ErrorDataResult<User>(Messages.UserNotFound);
             }
             return new SuccessDataResult<User>(userExists.Data, Messages.UserAlreadyExists);
         }

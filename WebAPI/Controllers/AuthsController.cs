@@ -26,7 +26,7 @@ namespace WebAPI.Controllers
         {
             var userLogin = await _authService.LoginAsync(userLoginDto);
             if (!userLogin.Success)return BadRequest(userLogin);
-            var result = _authService.CreateAccessToken(userLogin.Data);
+            var result = await _authService.CreateAccessToken(userLogin.Data);
             if (result.Success)return Ok(result.Data);
             return BadRequest(result);
         }
@@ -35,14 +35,14 @@ namespace WebAPI.Controllers
         {
             var userRegister = await _authService.RegisterAsync(userRegisterDto);
             if (!userRegister.Success)return BadRequest(userRegister);
-            var result = _authService.CreateAccessToken(userRegister.Data);
+            var result = await _authService.CreateAccessToken(userRegister.Data);
             if (result.Success)return Ok(result.Data);
             return BadRequest(result);
         }
         [HttpPost(template: "RefreshToken")]
-        public IActionResult RefreshToken(User user)
+        public async Task<IActionResult> RefreshToken(User user)
         {
-            var result = _authService.CreateAccessToken(user);
+            var result = await _authService.CreateAccessToken(user);
             if (result.Success)return Ok(result.Data);
             return BadRequest(result);
         }

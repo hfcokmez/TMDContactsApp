@@ -1,7 +1,7 @@
 ﻿using Business.Abstract;
 using Core.Utilities.Contents;
 using Core.Utilities.Results;
-using DataAccess.Abstract;
+using TMDContactsApp.DataAccess.Abstract;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;

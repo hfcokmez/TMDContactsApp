@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DataAccess.Abstract
+namespace TMDContactsApp.DataAccess.Abstract
 {
     public interface IGroupDal: IEntityRepositoryAsync<Group>
     {

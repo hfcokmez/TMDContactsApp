@@ -60,6 +60,6 @@ namespace Core.Utilities.Contents
         public static string UserNotificationFail = "Kullanıcıya şifre değiştirme kodu gönderilemedi.";
         //Token Messages:
         public static string AccessTokenCreated = "Access Token Oluşturuldu.";
-        
+        public static string AccessTokenNotCreated = "Access Token Oluşturulamadı.";
     }
 }

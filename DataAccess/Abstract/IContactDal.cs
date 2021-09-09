@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace DataAccess.Abstract
+namespace TMDContactsApp.DataAccess.Abstract
 {
     public interface IContactDal: IEntityRepositoryAsync<Contact>
     {

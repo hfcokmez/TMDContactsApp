@@ -7,7 +7,7 @@ using Core.Utilities.Security.Encryption;
 using Core.Utilities.Security.JsonWebToken;
 using Core.Utilities.Security.Jwt;
 using DataAccess;
-using DataAccess.Abstract;
+using TMDContactsApp.DataAccess.Abstract;
 using DataAccess.Concrete;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using TMDContactsApp.Core.Entities.Concrete;
 
 namespace WebAPI
 {

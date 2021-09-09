@@ -5,7 +5,7 @@ using Core.Utilities.Contents;
 using Core.Utilities.Results;
 using Core.Utilities.Services;
 using DataAccess;
-using DataAccess.Abstract;
+using TMDContactsApp.DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.Dto;
 using System;
