@@ -1,21 +1,27 @@
 ﻿using Core.Entities.Abstract;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using TMDContactsApp.Core.Entities.Concrete;
 
 namespace Core.DataAccess.AdoNet
 {
     public class AnEntityRepositoryBaseSync<TEntity> : IEntityRepositorySync<TEntity>
         where TEntity: class, IEntity, new()
     {
-        protected readonly static string connectionString = @"Server=TESTWEBDB\TESTWEBDB02;Database=TMDContacts;User Id=db_testadmin;Password=sabahsoft;Trusted_Connection=False;MultipleActiveResultSets=true;";
+        private readonly ConnectionSettings _connectionSettings;
+        public AnEntityRepositoryBaseSync(IOptions<ConnectionSettings> connectionSettings)
+        {
+            _connectionSettings = connectionSettings.Value;
+        }
 
         public bool Add(TEntity entity, string sProcedure)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionSettings.ConnectionString))
             {
                 DataSet dataset = new DataSet();
                 try
@@ -46,7 +52,7 @@ namespace Core.DataAccess.AdoNet
         }
         public bool Update(TEntity entity, string sProcedure)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionSettings.ConnectionString))
             {
                 DataSet dataset = new DataSet();
                 try
@@ -80,7 +86,7 @@ namespace Core.DataAccess.AdoNet
         }
         public TEntity Get(int id, string sProcedure)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionSettings.ConnectionString))
             {
                 try
                 {
@@ -118,7 +124,7 @@ namespace Core.DataAccess.AdoNet
         }
         public TEntity Get(string parameter, string field, string sProcedure)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionSettings.ConnectionString))
             {
                 try
                 {
@@ -155,7 +161,7 @@ namespace Core.DataAccess.AdoNet
         }
         public IList<TEntity> GetList(string sProcedure)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionSettings.ConnectionString))
             {
                 try
                 {
@@ -197,7 +203,7 @@ namespace Core.DataAccess.AdoNet
         }
         public IList<TEntity> GetList(int id, string field, string sProcedure)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionSettings.ConnectionString))
             {
                 try
                 {
@@ -236,7 +242,7 @@ namespace Core.DataAccess.AdoNet
         }
         public bool Delete(dynamic param, string sProcedure)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionSettings.ConnectionString))
             {
                 connection.Open();
                 using (var tran = connection.BeginTransaction())
@@ -266,7 +272,7 @@ namespace Core.DataAccess.AdoNet
         }
         public bool Delete(IList<int> entityList, string sProcedure)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionSettings.ConnectionString))
             {
                 SqlTransaction transaction = null;
                 try
@@ -300,7 +306,7 @@ namespace Core.DataAccess.AdoNet
         }
         public IList<TEntity> GetList(dynamic param, string sProcedure)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionSettings.ConnectionString))
             {
                 try
                 {
@@ -342,7 +348,7 @@ namespace Core.DataAccess.AdoNet
         }
         public TEntity Get(dynamic param, string sProcedure)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionSettings.ConnectionString))
             {
                 try
                 {
@@ -383,7 +389,7 @@ namespace Core.DataAccess.AdoNet
         }
         public int GetCount(dynamic param, string propertyName, string sProcedure)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionSettings.ConnectionString))
             {
                 try
                 {

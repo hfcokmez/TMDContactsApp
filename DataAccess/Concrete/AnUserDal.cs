@@ -8,15 +8,23 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using TMDContactsApp.Core.Entities.Concrete;
 
 namespace DataAccess.Concrete
 {
     public class AnUserDal : AnEntityRepositoryBaseAsync<User>, IUserDal
     {
+        private readonly ConnectionSettings _connectionSettings;
+        public AnUserDal(IOptions<ConnectionSettings> connectionSettings) : base(connectionSettings)
+        {
+            _connectionSettings = connectionSettings.Value;
+        }
         public async Task<List<OperationClaim>> GetClaims(int userId, string sProcedure)
         {
             var entityList = new List<OperationClaim>();
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionSettings.ConnectionString))
             {
                 try
                 {

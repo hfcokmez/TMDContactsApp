@@ -24,17 +24,18 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using TMDContactsApp.Core.Entities.Concrete;
+using TMDContactsApp.Business.Extensions;
 
 namespace WebAPI
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -74,40 +75,31 @@ namespace WebAPI
                 });
 
             });
+
+            //ConfigureServices
+            services.Configure<ConnectionSettings>(Configuration.GetSection("ConnectionSettings"));
+            services.Configure<TokenOptions>(Configuration.GetSection("TokenOptions"));
+
+            //Cors
             services.AddCors(c =>
             {
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
             });
+
             // Auto Mapper Configurations
             MapperConfiguration mapperConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new UserProfile());
             });
-
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);
-            //Dependency Injection:   
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-            
-            services.AddScoped<IContactService, ContactManager>();
-            services.AddScoped<IContactDal, AnContactDal>();
 
-            services.AddScoped<IUserService, UserManager>();
-            services.AddScoped<IUserDal, AnUserDal>();
+            //Dependency Injection  
+            services.LoadServices();
 
-            services.AddScoped<IGroupService, GroupManager>();
-            services.AddScoped<IGroupDal, AnGroupDal>();
-
-            services.AddScoped<IGroupContactService, GroupContactManager>();
-            services.AddScoped<IGroupContactDal, AnGroupContactDal>();
-
-            services.AddScoped<IAuthService, AuthManager>();
-            services.AddScoped<ITokenHelper, JwtHelper>();
-
-            //Token Options:
+            //Token Options
             var tokenOptions = Configuration.GetSection(key: "TokenOptions").Get<TokenOptions>();
 
-            services.Configure<TokenOptions>(Configuration.GetSection("TokenOptions"));
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

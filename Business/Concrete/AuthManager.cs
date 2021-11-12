@@ -9,6 +9,7 @@ using Core.Utilities.Security.Hashing;
 using Core.Utilities.Security.JsonWebToken;
 using Entities.Dto;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Business.Concrete
@@ -27,13 +28,11 @@ namespace Business.Concrete
 
         public async Task<IDataResult<AccessToken>> CreateAccessToken(User user)
         {
-            var userClaims = await _userService.GetUserOperationClaims(user);
-            if (userClaims != null)
-            {
-                var accessToken = _tokenHelper.CreateToken(user, userClaims);
+            var accessToken = _tokenHelper.CreateToken(user);
+            if(accessToken != null)
                 return new SuccessDataResult<AccessToken>(accessToken, Messages.AccessTokenCreated);
-            }
-            return new ErrorDataResult<AccessToken>(Messages.AccessTokenNotCreated);
+            else
+                return new ErrorDataResult<AccessToken>(Messages.AccessTokenNotCreated);
         }
 
         public async Task<IDataResult<User>> LoginAsync(UserLoginDto userLoginDto)

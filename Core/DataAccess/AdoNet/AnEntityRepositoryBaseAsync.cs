@@ -1,4 +1,5 @@
 ﻿using Core.Entities.Abstract;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -14,10 +15,14 @@ namespace Core.DataAccess.AdoNet
     public class AnEntityRepositoryBaseAsync<TEntity> : IEntityRepositoryAsync<TEntity>
         where TEntity : class, IEntity, new()
     {
-        protected readonly static string connectionString = @"Server=TESTWEBDB\TESTWEBDB02;Database=TMDContacts;User Id=db_testadmin;Password=sabahsoft;Trusted_Connection=False;MultipleActiveResultSets=true;";
+        private readonly ConnectionSettings _connectionSettings;
+        public AnEntityRepositoryBaseAsync(IOptions<ConnectionSettings> connectionSettings)
+        {
+            _connectionSettings = connectionSettings.Value;
+        }
         public async Task<bool> AddAsync(TEntity entity, string sProcedure)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionSettings.ConnectionString))
             {
                 DataSet dataset = new DataSet();
                 try
@@ -49,7 +54,7 @@ namespace Core.DataAccess.AdoNet
         }
         public async Task<bool> UpdateAsync(TEntity entity, string sProcedure)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionSettings.ConnectionString))
             {
                 DataSet dataset = new DataSet();
                 try
@@ -85,7 +90,7 @@ namespace Core.DataAccess.AdoNet
         public async Task<IList<TEntity>> GetListAsync(string sProcedure)
         {
             var entityList = new List<TEntity>();
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionSettings.ConnectionString))
             {
                 try
                 {
@@ -126,7 +131,7 @@ namespace Core.DataAccess.AdoNet
         public async Task<bool> DeleteAsync(dynamic param, string sProcedure)
         {
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionSettings.ConnectionString))
             {
                 await connection.OpenAsync();
                 using (SqlTransaction tran = connection.BeginTransaction())
@@ -156,7 +161,7 @@ namespace Core.DataAccess.AdoNet
         }
         public async Task<bool> DeleteListAsync(IList<int> entityList, string sProcedure)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionSettings.ConnectionString))
             {
                 SqlTransaction transaction = null;
                 try
@@ -191,7 +196,7 @@ namespace Core.DataAccess.AdoNet
         public async Task<IList<TEntity>> GetListAsync(dynamic param, string sProcedure)
         {
             var entityList = new List<TEntity>();
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionSettings.ConnectionString))
             {
                 try
                 {
@@ -232,7 +237,7 @@ namespace Core.DataAccess.AdoNet
         }
         public async Task<TEntity> GetAsync(dynamic param, string sProcedure)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionSettings.ConnectionString))
             {
                 try
                 {
@@ -273,7 +278,7 @@ namespace Core.DataAccess.AdoNet
         }
         public async Task<int> GetCountAsync(dynamic param, string propertyName, string sProcedure)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionSettings.ConnectionString))
             {
                 try
                 {
