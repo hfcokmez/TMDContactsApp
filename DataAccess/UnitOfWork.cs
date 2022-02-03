@@ -17,7 +17,7 @@ namespace DataAccess
         private readonly IOptions<ConnectionSettings> _connectionSettings;
         public UnitOfWork(IOptions<ConnectionSettings> connectionSettings)
         {
-            _connectionSettings = connectionSetting;
+            _connectionSettings = connectionSettings;
         }
 
         public IContactDal Contacts => _contactDal ?? new AnContactDal(_connectionSettings);
