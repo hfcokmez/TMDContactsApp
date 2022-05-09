@@ -76,17 +76,17 @@ namespace WebAPI
 
             });
 
-            //ConfigureServices.
+            //ConfigureServices
             services.Configure<ConnectionSettings>(Configuration.GetSection("ConnectionSettings"));
             services.Configure<TokenOptions>(Configuration.GetSection("TokenOptions"));
 
-            //Cors.
+            //Cors
             services.AddCors(c =>
             {
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
             });
 
-            // Auto Mapper Configurations.
+            // Auto Mapper Configurations
             MapperConfiguration mapperConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new UserProfile());
@@ -94,10 +94,10 @@ namespace WebAPI
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);
 
-            //Dependency Injection. 
+            //Dependency Injection
             services.LoadServices();
 
-            //Token Options.
+            //Token Options
             var tokenOptions = Configuration.GetSection(key: "TokenOptions").Get<TokenOptions>();
 
             services.AddAuthentication(options =>
