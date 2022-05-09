@@ -76,11 +76,11 @@ namespace WebAPI
 
             });
 
-            //ConfigureServices.
+            //ConfigureServices
             services.Configure<ConnectionSettings>(Configuration.GetSection("ConnectionSettings"));
             services.Configure<TokenOptions>(Configuration.GetSection("TokenOptions"));
 
-            //Cors.
+            //Cors
             services.AddCors(c =>
             {
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
